@@ -1,0 +1,273 @@
+{
+  "groups": [
+    {
+      "title": "데이터 분석 시험",
+      "items": [
+        {
+          "title": "빅데이터 분석기사 실기",
+          "href": "/dataset/03_dataq/index_big_python",
+          "file": "dataset/03_dataq/index_big_python",
+          "children": [
+            {
+              "title": "1.1 준비 방법",
+              "href": "/dataset/03_dataq/re",
+              "file": "dataset/03_dataq/re"
+            },
+            {
+              "title": "1.2 데이터 전처리 100 문제",
+              "href": "/dataset/99_pandas/pandasMain",
+              "file": "dataset/99_pandas/pandasMain"
+            },
+            {
+              "title": "1.3 작업 1유형 연습문제",
+              "href": "/dataset/03_dataq/typeone",
+              "file": "dataset/03_dataq/typeone"
+            },
+            {
+              "title": "1.4 작업 2유형 연습문제",
+              "href": "/dataset/03_dataq/typetwo",
+              "file": "dataset/03_dataq/typetwo"
+            },
+            {
+              "title": "1.5 작업 3유형 연습문제",
+              "href": "/dataset/03_dataq/typethree",
+              "file": "dataset/03_dataq/typethree"
+            },
+            {
+              "title": "1.6 기출문제 및 모의고사",
+              "href": "/dataset/practice/index",
+              "file": "dataset/practice/index",
+              "children": [
+                {
+                  "title": "9회 기출 변형",
+                  "href": "/dataset/practice/ex9",
+                  "file": "dataset/practice/ex9"
+                },
+                {
+                  "title": "8회 기출 변형",
+                  "href": "/dataset/practice/ex8",
+                  "file": "dataset/practice/ex8"
+                },
+                {
+                  "title": "7회 기출 변형",
+                  "href": "/dataset/practice/ex7",
+                  "file": "dataset/practice/ex7"
+                },
+                {
+                  "title": "6회 기출 변형",
+                  "href": "/dataset/practice/ex6",
+                  "file": "dataset/practice/ex6"
+                },
+                {
+                  "title": "5회 기출 변형",
+                  "href": "/dataset/practice/ex5",
+                  "file": "dataset/practice/ex5"
+                },
+                {
+                  "title": "4회 기출 변형",
+                  "href": "/dataset/practice/ex4",
+                  "file": "dataset/practice/ex4"
+                },
+                {
+                  "title": "3회 기출 변형",
+                  "href": "/dataset/practice/ex3",
+                  "file": "dataset/practice/ex3"
+                },
+                {
+                  "title": "2회 기출 변형",
+                  "href": "/dataset/practice/ex2",
+                  "file": "dataset/practice/ex2"
+                },
+                {
+                  "title": "모의고사 1회차",
+                  "href": "/dataset/practice/q1",
+                  "file": "dataset/practice/q1"
+                },
+                {
+                  "title": "모의고사 2회차",
+                  "href": "/dataset/practice/q2",
+                  "file": "dataset/practice/q2"
+                },
+                {
+                  "title": "모의고사 3회차",
+                  "href": "/dataset/practice/q3",
+                  "file": "dataset/practice/q3"
+                }
+              ]
+            },
+            {
+              "title": "1.7 R언어",
+              "href": "/dataset/03_dataq/index_big_r",
+              "file": "dataset/03_dataq/index_big_r",
+              "children": [
+                {
+                  "title": "데이터 전처리 100문제",
+                  "href": "/dataset/R/tutorial",
+                  "file": "dataset/R/tutorial"
+                },
+                {
+                  "title": "작업 1유형 연습문제",
+                  "href": "/dataset/R/typeone",
+                  "file": "dataset/R/typeone"
+                },
+                {
+                  "title": "실기 모의고사 (R)",
+                  "href": "/dataset/R/index",
+                  "file": "dataset/R/index",
+                  "children": [
+                    {
+                      "title": "1회차",
+                      "href": "/dataset/R/q1",
+                      "file": "dataset/R/q1"
+                    },
+                    {
+                      "title": "2회차",
+                      "href": "/dataset/R/q2",
+                      "file": "dataset/R/q2"
+                    },
+                    {
+                      "title": "3회차",
+                      "href": "/dataset/R/q3",
+                      "file": "dataset/R/q3"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "ADP 실기",
+          "href": "/dataset/03_dataq/index_adp",
+          "file": "dataset/03_dataq/index_adp",
+          "children": [
+            {
+              "title": "준비 방법",
+              "href": "/dataset/ADPpb/prepare",
+              "file": "dataset/ADPpb/prepare"
+            },
+            {
+              "title": "통계 200문제",
+              "href": "/dataset/ADPpb/stats",
+              "file": "dataset/ADPpb/stats"
+            },
+            {
+              "title": "ADP 대비 파이썬 통계 서적 리뷰",
+              "href": "/dataset/ADPpb/bookreview",
+              "file": "dataset/ADPpb/bookreview"
+            },
+            {
+              "title": "기출",
+              "href": "/dataset/ADPpb/index",
+              "file": "dataset/ADPpb/index",
+              "children": [
+                {
+                  "title": "ADP 34회 실기 문제",
+                  "href": "/dataset/ADPpb/00/34",
+                  "file": "dataset/ADPpb/00/34"
+                },
+                {
+                  "title": "ADP 33회 실기 문제",
+                  "href": "/dataset/ADPpb/00/33",
+                  "file": "dataset/ADPpb/00/33"
+                },
+                {
+                  "title": "ADP 32회 실기 문제",
+                  "href": "/dataset/ADPpb/00/32",
+                  "file": "dataset/ADPpb/00/32"
+                },
+                {
+                  "title": "ADP 31회 실기 문제",
+                  "href": "/dataset/ADPpb/00/31",
+                  "file": "dataset/ADPpb/00/31"
+                },
+                {
+                  "title": "ADP 30회 실기 문제",
+                  "href": "/dataset/ADPpb/00/30",
+                  "file": "dataset/ADPpb/00/30"
+                },
+                {
+                  "title": "ADP 29회 실기 문제",
+                  "href": "/dataset/ADPpb/00/29",
+                  "file": "dataset/ADPpb/00/29"
+                },
+                {
+                  "title": "ADP 28회 실기 문제",
+                  "href": "/dataset/ADPpb/00/28",
+                  "file": "dataset/ADPpb/00/28"
+                },
+                {
+                  "title": "ADP 27회 실기 문제",
+                  "href": "/dataset/ADPpb/00/27",
+                  "file": "dataset/ADPpb/00/27"
+                },
+                {
+                  "title": "ADP 26회 실기 문제",
+                  "href": "/dataset/ADPpb/00/26",
+                  "file": "dataset/ADPpb/00/26"
+                },
+                {
+                  "title": "ADP 25회 실기 문제",
+                  "href": "/dataset/ADPpb/00/25",
+                  "file": "dataset/ADPpb/00/25"
+                },
+                {
+                  "title": "ADP 24회 실기 문제",
+                  "href": "/dataset/ADPpb/00/24",
+                  "file": "dataset/ADPpb/00/24"
+                },
+                {
+                  "title": "ADP 23회 실기 문제",
+                  "href": "/dataset/ADPpb/00/23",
+                  "file": "dataset/ADPpb/00/23"
+                },
+                {
+                  "title": "ADP 22회 실기 문제",
+                  "href": "/dataset/ADPpb/00/22",
+                  "file": "dataset/ADPpb/00/22"
+                },
+                {
+                  "title": "ADP 20회 실기 문제",
+                  "href": "/dataset/ADPpb/00/20",
+                  "file": "dataset/ADPpb/00/20"
+                },
+                {
+                  "title": "ADP 17회 실기 문제",
+                  "href": "/dataset/ADPpb/00/17",
+                  "file": "dataset/ADPpb/00/17"
+                },
+                {
+                  "title": "ADP 15회 실기 문제",
+                  "href": "/dataset/ADPpb/00/15",
+                  "file": "dataset/ADPpb/00/15"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "파이썬 분석패키지",
+          "href": "/dataset/03_dataq/index_etc",
+          "file": "dataset/03_dataq/index_etc",
+          "children": [
+            {
+              "title": "Sklearn",
+              "href": "/dataset/98_sklearn/sklearn",
+              "file": "dataset/98_sklearn/sklearn"
+            },
+            {
+              "title": "Scipy",
+              "href": "/dataset/97_scipy/scipy",
+              "file": "dataset/97_scipy/scipy"
+            },
+            {
+              "title": "Statsmodels",
+              "href": "/dataset/96_statsmodels/statsmodels",
+              "file": "dataset/96_statsmodels/statsmodels"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

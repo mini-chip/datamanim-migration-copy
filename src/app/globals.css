@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "katex/dist/katex.min.css";
+/* 라이트 */
+@import "prismjs/themes/prism.css";
+/* 다크 (원하는 테마로 교체 가능) */
+@import "prism-themes/themes/prism-vsc-dark-plus.css";
+
+body {
+  @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* AdmonitionBlock에서 prose 클래스가 제대로 작동하도록 */
+.prose strong {
+  font-weight: 700 !important;
+  color: inherit;
+}
+
+/* MDX 콘텐츠에서 불릿 포인트 표시 */
+.prose ul {
+  list-style-type: disc !important;
+  margin-left: 1.25rem !important;
+  padding-left: 1.25rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  margin-left: 1.25rem !important;
+  padding-left: 1.25rem !important;
+}
+
+.prose li {
+  margin: 0.5rem 0 !important;
+}
+
+/* 일반 MDX 콘텐츠에서도 불릿 포인트 표시 */
+ul:not(.prose ul) {
+  list-style-type: disc !important;
+  margin-left: 1.25rem !important;
+  padding-left: 1.25rem !important;
+}
+
+ol:not(.prose ol) {
+  list-style-type: decimal !important;
+  margin-left: 1.25rem !important;
+  padding-left: 1.25rem !important;
+}
+
+/* 테이블 스타일 강화 */
+table {
+  border-collapse: collapse !important;
+  min-width: 100% !important;
+}
+
+table th,
+table td {
+  border-right: 1px solid #e5e7eb !important;
+  padding: 12px 16px !important;
+}
+
+table th:first-child,
+table td:first-child {
+  padding-left: 24px !important;
+}
+
+table th:last-child,
+table td:last-child {
+  border-right: none !important;
+}
+
+/* 라이트 모드 */
+table tr:hover {
+  background-color: #f3e8ff !important; /* Tailwind: purple-100 */
+  transition: background-color 0.2s ease !important;
+}
+
+/* 다크 모드 */
+.dark table tr:hover {
+  background-color: #5b21b6 !important; /* Tailwind: purple-800 */
+  transition: background-color 0.2s ease !important;
+}
+table thead tr:hover {
+  background-color: #f9fafb !important;
+}
+
+/* prose 클래스가 클릭 가능한 요소들에 미치는 영향을 방지 */
+.prose a,
+.prose button,
+.prose [role="button"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* 모든 클릭 가능한 요소의 z-index 확보 */
+a,
+button,
+[role="button"],
+[onclick] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hydration이 완료되기 전까지 클릭 이벤트 보장 */
+[data-hydrated="false"] button,
+[data-hydrated="false"] [role="button"],
+[data-hydrated="false"] a {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* 인터랙티브 요소들의 즉시 반응성 보장 */
+button,
+[role="button"],
+a[href] {
+  transition: none !important;
+  will-change: auto;
+}
+
+/* 초기 로딩 시 인터랙션 준비 */
+.interactive-ready {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+/* Prism.js 코드 블록 스타일링 */
+pre[class*="language-"],
+code[class*="language-"] {
+  @apply bg-gray-100 text-gray-800; /* 라이트 모드 */
+}
+
+.dark pre[class*="language-"],
+.dark code[class*="language-"] {
+  @apply bg-[#1e1e1e] text-gray-100; /* 다크 모드 */
+}
+
+/* 일반 MDX 코드 블록 스타일링 */
+.prose pre:not([class*="language-"]) {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.dark .prose pre:not([class*="language-"]) {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.prose code:not([class*="language-"]) {
+  @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded;
+}
+
+.dark .prose code:not([class*="language-"]) {
+  @apply bg-gray-800 text-gray-100 px-1 py-0.5 rounded;
+}
