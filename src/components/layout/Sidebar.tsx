@@ -134,19 +134,17 @@ export default function Sidebar({
                 </Transition.Child>
 
                 <div className="flex grow flex-col overflow-y-auto bg-sidebar-bg border-r border-sidebar-border">
-                  <div className="flex flex-col h-16 shrink-0 items-center justify-center border-b border-sidebar-border px-4">
-                    <Image
-                      src="/img/logo.png"
-                      alt="Logo"
-                      width={211}
-                      height={103}
-                      className="h-8 w-auto mb-1"
-                    />
+                  <div className="flex h-16 shrink-0 items-center justify-center border-b border-sidebar-border px-4">
                     <Link
                       href="/"
-                      className="text-sm font-bold text-sidebar-accent hover:text-sidebar-accentHover transition-colors"
+                      className="flex items-center gap-2"
                     >
-                      DataManim
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-2 py-1 rounded-lg">
+                        <span className="text-white font-bold text-sm">DS</span>
+                      </div>
+                      <span className="text-sm font-bold text-sidebar-accent hover:text-sidebar-accentHover transition-colors">
+                        DataStudy
+                      </span>
                     </Link>
                   </div>
                   <nav className="flex flex-1 flex-col py-4">
@@ -167,21 +165,17 @@ export default function Sidebar({
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col overflow-y-auto bg-sidebar-bg border-r border-sidebar-border">
           <div className="flex h-16 shrink-0 items-center justify-center border-b border-sidebar-border px-4">
-            <div className="flex flex-col items-center">
-              <Image
-                src="/img/logo.png"
-                alt="Logo"
-                width={211}
-                height={103}
-                className="h-8 w-auto mb-1"
-              />
-              <Link
-                href="/"
-                className="text-sm font-bold text-sidebar-accent hover:text-sidebar-accentHover transition-colors"
-              >
-                DataManim
-              </Link>
-            </div>
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+            >
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-2 py-1 rounded-lg">
+                <span className="text-white font-bold text-sm">DS</span>
+              </div>
+              <span className="text-sm font-bold text-sidebar-accent hover:text-sidebar-accentHover transition-colors">
+                DataStudy
+              </span>
+            </Link>
           </div>
           <nav className="flex flex-1 flex-col py-4 list-none">
             <div className="space-y-1">

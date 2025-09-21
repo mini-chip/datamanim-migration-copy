@@ -32,7 +32,7 @@ export function OutputCell({ children }: { children: React.ReactNode }) {
 
 function CustomImage(props: React.ComponentProps<"img">) {
   const { src, alt, width, height, ...rest } = props;
-  if (src?.startsWith("/datamanim/")) {
+  if (src?.startsWith("/datastudy/")) {
     return (
       <Image
         src={src}
@@ -135,30 +135,54 @@ const mdxComponents: MDXComponents = {
   img: CustomImage,
   pre: CustomPre,
   code: CustomCode,
-  h1: (props) => (
-    <h1
-      className="text-4xl font-bold mb-8 mt-12 text-gray-900 dark:text-gray-100 border-b-2 border-primary-200 pb-4"
-      {...props}
-    />
-  ),
-  h2: (props) => (
-    <h2
-      className="text-2xl font-semibold mb-6 mt-10 text-gray-900 dark:text-gray-100 border-l-4 border-primary-500 pl-4"
-      {...props}
-    />
-  ),
-  h3: (props) => (
-    <h3
-      className="text-xl font-semibold mb-4 mt-8 text-gray-800 dark:text-gray-100"
-      {...props}
-    />
-  ),
-  h4: (props) => (
-    <h4
-      className="text-lg font-medium mb-3 mt-6 text-gray-800 dark:text-gray-100"
-      {...props}
-    />
-  ),
+  h1: (props) => {
+    const { id, children, ...rest } = props;
+    return (
+      <h1
+        id={id}
+        className="text-4xl font-bold mb-8 mt-12 text-gray-900 dark:text-gray-100 border-b-2 border-primary-200 pb-4"
+        {...rest}
+      >
+        {children}
+      </h1>
+    );
+  },
+  h2: (props) => {
+    const { id, children, ...rest } = props;
+    return (
+      <h2
+        id={id}
+        className="text-2xl font-semibold mb-6 mt-10 text-gray-900 dark:text-gray-100 border-l-4 border-primary-500 pl-4"
+        {...rest}
+      >
+        {children}
+      </h2>
+    );
+  },
+  h3: (props) => {
+    const { id, children, ...rest } = props;
+    return (
+      <h3
+        id={id}
+        className="text-xl font-semibold mb-4 mt-8 text-gray-800 dark:text-gray-100"
+        {...rest}
+      >
+        {children}
+      </h3>
+    );
+  },
+  h4: (props) => {
+    const { id, children, ...rest } = props;
+    return (
+      <h4
+        id={id}
+        className="text-lg font-medium mb-3 mt-6 text-gray-800 dark:text-gray-100"
+        {...rest}
+      >
+        {children}
+      </h4>
+    );
+  },
 
   ul: (props) => (
     <ul

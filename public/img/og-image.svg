@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="80" font-weight="bold" text-anchor="middle" fill="white">DataStudy</text>
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="white" opacity="0.9">데이터 분석 학습 플랫폼</text>
+  <circle cx="150" cy="150" r="30" fill="white" opacity="0.2"/>
+  <circle cx="1050" cy="480" r="40" fill="white" opacity="0.1"/>
+  <circle cx="200" cy="500" r="25" fill="white" opacity="0.15"/>
+</svg>

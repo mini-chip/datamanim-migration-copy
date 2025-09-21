@@ -91,7 +91,7 @@ export default function Pagination({ currentPath, toc }: PaginationProps) {
       </div>
       
       <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <div>By DataManim</div>
+        <div>By DataStudy</div>
         <div>© Copyright 2022.</div>
       </div>
     </div>

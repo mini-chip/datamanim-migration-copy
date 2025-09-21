@@ -113,21 +113,21 @@ export async function generateMetadata({
     (record?.data &&
       typeof record.data.description === "string" &&
       record.data.description.trim()) ||
-    "Datamanim에서 데이터 분석과 머신러닝을 배워보세요. Python, R, SQL 등 다양한 도구와 실습 예제를 제공합니다.";
+    "DataStudy에서 데이터 분석과 머신러닝을 배워보세요. Python, R, SQL 등 다양한 도구와 실습 예제를 제공합니다.";
 
-  const currentUrl = `https://datamanim.com/${params.slug.join("/")}`;
-  const imageUrl = "https://datamanim.com/img/metalogo.png";
+  const currentUrl = `https://datastudy.com/${params.slug.join("/")}`;
+  const imageUrl = "https://via.placeholder.com/1200x630/4F46E5/FFFFFF?text=DataStudy";
 
   return {
-    title: pageTitle, // 레이아웃의 template가 여기에 적용되어 최종 "Datamanim - pageTitle"
+    title: pageTitle, // 레이아웃의 template가 여기에 적용되어 최종 "DataStudy - pageTitle"
     description,
     openGraph: {
       type: "article",
       title: pageTitle,
       description,
       url: currentUrl,
-      siteName: "Datamanim",
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: "Datamanim" }],
+      siteName: "DataStudy",
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: "DataStudy" }],
       locale: "ko_KR"
     },
     twitter: {
@@ -135,8 +135,8 @@ export async function generateMetadata({
       title: pageTitle,
       description,
       images: [imageUrl],
-      creator: "@datamanim",
-      site: "@datamanim"
+      creator: "@datastudy",
+      site: "@datastudy"
     },
     alternates: { canonical: currentUrl }
   };

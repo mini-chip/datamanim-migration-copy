@@ -1,0 +1,549 @@
+# Pandas 예제문제 3 - 피벗 테이블
+
+## 문제 설명
+
+피벗 테이블을 활용하여 데이터를 다차원으로 분석하고 요약하는 방법을 학습하시오.
+
+## 데이터 준비
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 매장별 판매 데이터 생성
+np.random.seed(42)
+n = 1000
+
+# 기준 데이터 정의
+stores = ['강남점', '홍대점', '신촌점', '이태원점', '명동점']
+products = ['스마트폰', '태블릿', '노트북', '스마트워치', '이어폰']
+brands = ['Apple', 'Samsung', 'LG', 'Sony', 'Microsoft']
+quarters = ['Q1', 'Q2', 'Q3', 'Q4']
+months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+
+data = {
+    'store': np.random.choice(stores, n),
+    'product': np.random.choice(products, n),
+    'brand': np.random.choice(brands, n),
+    'quarter': np.random.choice(quarters, n),
+    'month': np.random.choice(months, n),
+    'sales_amount': np.random.uniform(100, 5000, n).round(2),
+    'quantity': np.random.randint(1, 50, n),
+    'cost': np.random.uniform(50, 3000, n).round(2),
+    'customer_satisfaction': np.random.uniform(3.0, 5.0, n).round(1),
+    'sales_rep': np.random.choice([f'직원{i+1}' for i in range(15)], n)
+}
+
+# 이익 계산
+data['profit'] = data['sales_amount'] - data['cost']
+
+df = pd.DataFrame(data)
+print("데이터 기본정보:")
+print(df.head())
+print(f"\n데이터 크기: {df.shape}")
+print(f"\n기본 통계:")
+print(df.describe())
+```
+
+## 문제 1: 기본 피벗 테이블
+
+**Q1-1.** 매장별, 제품별 총 매출액을 피벗 테이블로 작성하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 기본 피벗 테이블 - 매장별, 제품별 매출액
+pivot_basic = pd.pivot_table(df,
+                            values='sales_amount',
+                            index='store',
+                            columns='product',
+                            aggfunc='sum',
+                            fill_value=0).round(2)
+
+print("매장별, 제품별 총 매출액:")
+print(pivot_basic)
+
+# 매출액 합계 추가
+pivot_with_totals = pivot_basic.copy()
+pivot_with_totals['총계'] = pivot_with_totals.sum(axis=1)
+pivot_with_totals.loc['총계'] = pivot_with_totals.sum(axis=0)
+
+print(f"\n매출액 합계 포함:")
+print(pivot_with_totals)
+
+# 시각화
+plt.figure(figsize=(12, 8))
+sns.heatmap(pivot_basic, annot=True, fmt='.0f', cmap='YlOrRd', cbar_kws={'label': '매출액'})
+plt.title('매장별, 제품별 매출액 히트맵')
+plt.xlabel('제품')
+plt.ylabel('매장')
+plt.tight_layout()
+plt.show()
+
+# 가장 높은 매출을 기록한 매장-제품 조합
+max_sales_idx = pivot_basic.stack().idxmax()
+max_sales_value = pivot_basic.stack().max()
+print(f"\n최고 매출 조합: {max_sales_idx[0]} - {max_sales_idx[1]} ({max_sales_value:,.0f}원)")
+```
+</CollapsibleCodeCell>
+
+**Q1-2.** 브랜드별, 분기별 평균 고객만족도를 분석하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 브랜드별, 분기별 평균 고객만족도
+satisfaction_pivot = pd.pivot_table(df,
+                                   values='customer_satisfaction',
+                                   index='brand',
+                                   columns='quarter',
+                                   aggfunc='mean',
+                                   fill_value=0).round(2)
+
+print("브랜드별, 분기별 평균 고객만족도:")
+print(satisfaction_pivot)
+
+# 브랜드별 연간 평균 만족도
+satisfaction_pivot['연간평균'] = satisfaction_pivot.mean(axis=1)
+satisfaction_ranked = satisfaction_pivot.sort_values('연간평균', ascending=False)
+
+print(f"\n브랜드별 연간 평균 만족도 (순위):")
+print(satisfaction_ranked['연간평균'])
+
+# 분기별 전체 평균 만족도
+quarterly_avg = satisfaction_pivot.mean(axis=0)
+print(f"\n분기별 전체 평균 만족도:")
+print(quarterly_avg)
+
+# 시각화
+fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+
+# 히트맵
+sns.heatmap(satisfaction_pivot.iloc[:, :-1], annot=True, fmt='.2f', cmap='RdYlGn',
+           ax=axes[0], cbar_kws={'label': '고객만족도'})
+axes[0].set_title('브랜드별, 분기별 고객만족도')
+axes[0].set_xlabel('분기')
+axes[0].set_ylabel('브랜드')
+
+# 브랜드별 연간 평균 만족도
+satisfaction_ranked['연간평균'].plot(kind='bar', ax=axes[1], color='skyblue')
+axes[1].set_title('브랜드별 연간 평균 고객만족도')
+axes[1].set_xlabel('브랜드')
+axes[1].set_ylabel('평균 만족도')
+axes[1].tick_params(axis='x', rotation=45)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 문제 2: 다중 집계 함수
+
+**Q2-1.** 여러 집계 함수를 동시에 적용한 피벗 테이블을 작성하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 다중 집계 함수를 사용한 피벗 테이블
+multi_agg_pivot = pd.pivot_table(df,
+                                values=['sales_amount', 'quantity', 'profit'],
+                                index='store',
+                                columns='product',
+                                aggfunc={
+                                    'sales_amount': ['sum', 'mean'],
+                                    'quantity': 'sum',
+                                    'profit': 'sum'
+                                },
+                                fill_value=0).round(2)
+
+print("다중 집계 피벗 테이블:")
+print(multi_agg_pivot)
+
+# 컬럼 레벨 정리
+multi_agg_pivot.columns = ['_'.join(col).strip() for col in multi_agg_pivot.columns.values]
+print(f"\n컬럼명 정리 후:")
+print(multi_agg_pivot.columns.tolist())
+
+# 매장별 총 매출액과 총 이익
+store_summary = pd.DataFrame({
+    '총매출액': df.groupby('store')['sales_amount'].sum(),
+    '총이익': df.groupby('store')['profit'].sum(),
+    '총판매량': df.groupby('store')['quantity'].sum(),
+    '평균매출액': df.groupby('store')['sales_amount'].mean()
+}).round(2)
+
+store_summary['이익률(%)'] = (store_summary['총이익'] / store_summary['총매출액'] * 100).round(1)
+store_summary = store_summary.sort_values('총매출액', ascending=False)
+
+print(f"\n매장별 종합 성과:")
+print(store_summary)
+
+# 시각화
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+# 매장별 총 매출액
+store_summary['총매출액'].plot(kind='bar', ax=axes[0,0], color='green')
+axes[0,0].set_title('매장별 총 매출액')
+axes[0,0].set_xlabel('매장')
+axes[0,0].tick_params(axis='x', rotation=45)
+
+# 매장별 총 이익
+store_summary['총이익'].plot(kind='bar', ax=axes[0,1], color='orange')
+axes[0,1].set_title('매장별 총 이익')
+axes[0,1].set_xlabel('매장')
+axes[0,1].tick_params(axis='x', rotation=45)
+
+# 매장별 이익률
+store_summary['이익률(%)'].plot(kind='bar', ax=axes[1,0], color='red')
+axes[1,0].set_title('매장별 이익률 (%)')
+axes[1,0].set_xlabel('매장')
+axes[1,0].tick_params(axis='x', rotation=45)
+
+# 매출액 vs 이익 산점도
+axes[1,1].scatter(store_summary['총매출액'], store_summary['총이익'], s=100, alpha=0.7)
+for i, store in enumerate(store_summary.index):
+    axes[1,1].annotate(store, (store_summary['총매출액'].iloc[i], store_summary['총이익'].iloc[i]))
+axes[1,1].set_title('매출액 vs 이익')
+axes[1,1].set_xlabel('총 매출액')
+axes[1,1].set_ylabel('총 이익')
+axes[1,1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 문제 3: 다차원 피벗 테이블
+
+**Q3-1.** 3개 이상의 차원을 가진 피벗 테이블을 작성하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 3차원 피벗 테이블: 매장 + 브랜드 vs 제품
+multi_dim_pivot = pd.pivot_table(df,
+                                values='sales_amount',
+                                index=['store', 'brand'],
+                                columns='product',
+                                aggfunc='sum',
+                                fill_value=0).round(2)
+
+print("3차원 피벗 테이블 (매장-브랜드 vs 제품):")
+print(multi_dim_pivot.head(10))
+
+# 매장별 브랜드 성과 분석
+store_brand_performance = df.groupby(['store', 'brand']).agg({
+    'sales_amount': 'sum',
+    'quantity': 'sum',
+    'profit': 'sum'
+}).round(2)
+
+print(f"\n매장별 브랜드 성과:")
+print(store_brand_performance.head(10))
+
+# 각 매장에서 가장 성과가 좋은 브랜드
+best_brands_by_store = df.groupby('store').apply(
+    lambda x: x.groupby('brand')['sales_amount'].sum().idxmax()
+)
+
+print(f"\n매장별 최고 성과 브랜드:")
+print(best_brands_by_store)
+
+# 브랜드별 매장 분포 분석
+brand_store_dist = pd.crosstab(df['brand'], df['store'],
+                              values=df['sales_amount'],
+                              aggfunc='sum',
+                              normalize='index') * 100
+
+print(f"\n브랜드별 매장 매출 분포 (%):")
+print(brand_store_dist.round(1))
+
+# 시각화
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+
+# 매장-브랜드별 매출 상위 15개
+top_store_brand = store_brand_performance.sort_values('sales_amount', ascending=False).head(15)
+y_pos = range(len(top_store_brand))
+axes[0,0].barh(y_pos, top_store_brand['sales_amount'], color='skyblue')
+axes[0,0].set_yticks(y_pos)
+axes[0,0].set_yticklabels([f"{idx[0]}-{idx[1]}" for idx in top_store_brand.index])
+axes[0,0].set_title('매장-브랜드별 매출 상위 15개')
+axes[0,0].set_xlabel('매출액')
+
+# 브랜드별 매장 분포 히트맵
+sns.heatmap(brand_store_dist, annot=True, fmt='.1f', cmap='Blues', ax=axes[0,1])
+axes[0,1].set_title('브랜드별 매장 매출 분포 (%)')
+
+# 제품별 브랜드 점유율
+product_brand_share = pd.crosstab(df['product'], df['brand'],
+                                 values=df['quantity'],
+                                 aggfunc='sum',
+                                 normalize='index') * 100
+
+sns.heatmap(product_brand_share, annot=True, fmt='.1f', cmap='Greens', ax=axes[1,0])
+axes[1,0].set_title('제품별 브랜드 판매량 점유율 (%)')
+
+# 월별 매출 추이
+monthly_sales = df.groupby('month')['sales_amount'].sum()
+month_order = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+monthly_sales = monthly_sales.reindex(month_order)
+
+axes[1,1].plot(range(len(monthly_sales)), monthly_sales.values, marker='o', linewidth=2)
+axes[1,1].set_xticks(range(len(monthly_sales)))
+axes[1,1].set_xticklabels(monthly_sales.index, rotation=45)
+axes[1,1].set_title('월별 매출 추이')
+axes[1,1].set_ylabel('매출액')
+axes[1,1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 문제 4: 피벗 테이블 변형과 언피벗
+
+**Q4-1.** 피벗 테이블을 다양한 형태로 변형하고 언피벗을 수행하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 원본 피벗 테이블
+original_pivot = pd.pivot_table(df,
+                               values='sales_amount',
+                               index='store',
+                               columns='product',
+                               aggfunc='sum',
+                               fill_value=0)
+
+print("원본 피벗 테이블:")
+print(original_pivot)
+
+# 1. 비율로 변환 (행 기준)
+pivot_row_pct = original_pivot.div(original_pivot.sum(axis=1), axis=0) * 100
+print(f"\n행 기준 비율 (%):")
+print(pivot_row_pct.round(1))
+
+# 2. 비율로 변환 (열 기준)
+pivot_col_pct = original_pivot.div(original_pivot.sum(axis=0), axis=1) * 100
+print(f"\n열 기준 비율 (%):")
+print(pivot_col_pct.round(1))
+
+# 3. 전체 기준 비율
+pivot_total_pct = original_pivot / original_pivot.sum().sum() * 100
+print(f"\n전체 기준 비율 (%):")
+print(pivot_total_pct.round(1))
+
+# 4. 언피벗 (melt) 수행
+melted_data = original_pivot.reset_index().melt(id_vars='store',
+                                               var_name='product',
+                                               value_name='sales_amount')
+
+print(f"\n언피벗된 데이터:")
+print(melted_data.head(10))
+
+# 5. 누적 합계
+pivot_cumsum = original_pivot.cumsum(axis=1)
+print(f"\n누적 합계 (열 방향):")
+print(pivot_cumsum)
+
+# 6. 순위 매기기
+pivot_rank = original_pivot.rank(axis=1, ascending=False)
+print(f"\n매장별 제품 순위:")
+print(pivot_rank)
+
+# 시각화
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+
+# 원본 데이터 히트맵
+sns.heatmap(original_pivot, annot=True, fmt='.0f', cmap='YlOrRd', ax=axes[0,0])
+axes[0,0].set_title('원본 매출액')
+
+# 행 기준 비율 히트맵
+sns.heatmap(pivot_row_pct, annot=True, fmt='.1f', cmap='Blues', ax=axes[0,1])
+axes[0,1].set_title('매장별 제품 매출 비중 (%)')
+
+# 누적 합계 히트맵
+sns.heatmap(pivot_cumsum, annot=True, fmt='.0f', cmap='Greens', ax=axes[1,0])
+axes[1,0].set_title('누적 매출액')
+
+# 언피벗된 데이터로 박스플롯
+melted_data.boxplot(column='sales_amount', by='product', ax=axes[1,1])
+axes[1,1].set_title('제품별 매장간 매출 분포')
+axes[1,1].set_xlabel('제품')
+axes[1,1].set_ylabel('매출액')
+
+plt.suptitle('')  # 기본 제목 제거
+plt.tight_layout()
+plt.show()
+
+# 언피벗된 데이터 통계
+melted_stats = melted_data.groupby('product')['sales_amount'].describe()
+print(f"\n제품별 매장간 매출 통계:")
+print(melted_stats.round(2))
+```
+</CollapsibleCodeCell>
+
+## 문제 5: 고급 피벗 분석
+
+**Q5-1.** 조건부 집계와 커스텀 함수를 활용한 고급 피벗 분석을 수행하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 커스텀 집계 함수들
+def top_performer_ratio(series):
+    """상위 20% 성과자 비율"""
+    threshold = series.quantile(0.8)
+    return (series >= threshold).mean() * 100
+
+def coefficient_variation(series):
+    """변동계수"""
+    return (series.std() / series.mean()) * 100
+
+def profitable_ratio(group):
+    """수익성 있는 거래 비율"""
+    return (group['profit'] > 0).mean() * 100
+
+# 고급 피벗 테이블 - 매장별 성과 지표
+advanced_pivot = pd.pivot_table(df,
+                               values='sales_amount',
+                               index='store',
+                               columns='brand',
+                               aggfunc=[
+                                   'sum',
+                                   'mean',
+                                   'std',
+                                   top_performer_ratio,
+                                   coefficient_variation
+                               ],
+                               fill_value=0)
+
+print("고급 피벗 테이블:")
+print(advanced_pivot.round(2))
+
+# 매장-제품별 상세 분석
+detailed_analysis = df.groupby(['store', 'product']).apply(
+    lambda x: pd.Series({
+        '총매출액': x['sales_amount'].sum(),
+        '평균매출액': x['sales_amount'].mean(),
+        '거래건수': len(x),
+        '수익성거래비율': profitable_ratio(x),
+        '평균고객만족도': x['customer_satisfaction'].mean(),
+        '최고매출액': x['sales_amount'].max(),
+        '매출변동계수': coefficient_variation(x['sales_amount'])
+    })
+).round(2)
+
+print(f"\n매장-제품별 상세 분석 (상위 10개):")
+print(detailed_analysis.sort_values('총매출액', ascending=False).head(10))
+
+# 분기별, 매장별 성장률 분석
+quarterly_growth = df.groupby(['store', 'quarter'])['sales_amount'].sum().unstack()
+quarterly_growth_rate = quarterly_growth.pct_change(axis=1) * 100
+
+print(f"\n매장별 분기 성장률 (%):")
+print(quarterly_growth_rate.round(1))
+
+# 매장별 제품 포트폴리오 분석
+portfolio_analysis = pd.pivot_table(df,
+                                   values=['sales_amount', 'profit'],
+                                   index='store',
+                                   columns='product',
+                                   aggfunc='sum',
+                                   fill_value=0)
+
+# 각 매장의 주력 제품 (매출 기준)
+main_products = portfolio_analysis['sales_amount'].idxmax(axis=1)
+print(f"\n매장별 주력 제품:")
+print(main_products)
+
+# 각 매장의 가장 수익성 높은 제품
+most_profitable = portfolio_analysis['profit'].idxmax(axis=1)
+print(f"\n매장별 최고 수익 제품:")
+print(most_profitable)
+
+# 시각화
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+
+# 매장별 총 매출액과 평균 고객만족도
+store_performance = df.groupby('store').agg({
+    'sales_amount': 'sum',
+    'customer_satisfaction': 'mean'
+}).round(2)
+
+axes[0,0].scatter(store_performance['sales_amount'],
+                 store_performance['customer_satisfaction'],
+                 s=100, alpha=0.7, color='blue')
+for store, data in store_performance.iterrows():
+    axes[0,0].annotate(store, (data['sales_amount'], data['customer_satisfaction']))
+axes[0,0].set_xlabel('총 매출액')
+axes[0,0].set_ylabel('평균 고객만족도')
+axes[0,0].set_title('매출액 vs 고객만족도')
+axes[0,0].grid(True, alpha=0.3)
+
+# 분기별 성장률 히트맵
+sns.heatmap(quarterly_growth_rate.iloc[:, 1:], annot=True, fmt='.1f',
+           cmap='RdYlGn', center=0, ax=axes[0,1])
+axes[0,1].set_title('매장별 분기 성장률 (%)')
+
+# 제품별 수익성 분석
+product_profitability = df.groupby('product').agg({
+    'profit': 'sum',
+    'sales_amount': 'sum'
+})
+product_profitability['수익률(%)'] = (product_profitability['profit'] /
+                                  product_profitability['sales_amount'] * 100)
+
+product_profitability['수익률(%)'].plot(kind='bar', ax=axes[1,0], color='green')
+axes[1,0].set_title('제품별 수익률 (%)')
+axes[1,0].set_xlabel('제품')
+axes[1,0].tick_params(axis='x', rotation=45)
+axes[1,0].grid(True, alpha=0.3)
+
+# 브랜드별 매출 분포
+brand_sales = df.groupby('brand')['sales_amount'].sum().sort_values(ascending=True)
+axes[1,1].barh(range(len(brand_sales)), brand_sales.values, color='orange')
+axes[1,1].set_yticks(range(len(brand_sales)))
+axes[1,1].set_yticklabels(brand_sales.index)
+axes[1,1].set_title('브랜드별 총 매출액')
+axes[1,1].set_xlabel('총 매출액')
+
+plt.tight_layout()
+plt.show()
+
+# 종합 성과 요약
+print(f"\n=== 종합 성과 요약 ===")
+print(f"전체 매출액: {df['sales_amount'].sum():,.0f}원")
+print(f"전체 이익: {df['profit'].sum():,.0f}원")
+print(f"평균 이익률: {(df['profit'].sum() / df['sales_amount'].sum() * 100):.1f}%")
+print(f"최고 매출 매장: {store_performance['sales_amount'].idxmax()}")
+print(f"최고 만족도 매장: {store_performance['customer_satisfaction'].idxmax()}")
+print(f"최고 수익률 제품: {product_profitability['수익률(%)'].idxmax()}")
+```
+</CollapsibleCodeCell>
+
+## 종합 정리
+
+:::note[학습 요약]
+이 예제에서 다룬 주요 내용:
+
+1. **기본 피벗 테이블**: values, index, columns, aggfunc 활용
+2. **다중 집계**: 여러 집계 함수 동시 적용
+3. **다차원 분석**: 3개 이상 차원으로 데이터 분석
+4. **피벗 변형**: 비율 변환, 순위, 누적 합계
+5. **언피벗(melt)**: 피벗 테이블을 긴 형태로 변환
+6. **고급 분석**: 커스텀 함수와 조건부 집계
+7. **성과 분석**: 다양한 KPI를 활용한 종합 분석
+8. **시각화**: 히트맵, 산점도, 박스플롯 등 다양한 차트
+:::
+
+:::warning[피벗 테이블 주의사항]
+- **메모리 사용량**: 차원이 많을수록 메모리 사용량 증가
+- **결측값 처리**: fill_value 옵션으로 적절한 기본값 설정
+- **데이터 타입**: 집계 함수에 적합한 데이터 타입 확인
+- **인덱스 구조**: 다중 인덱스 결과 해석 주의
+- **성능 최적화**: 대용량 데이터에서는 적절한 샘플링 고려
+:::
+
+## 참고자료
+
+- Pandas 공식 문서 - Pivot Tables
+- 『파이썬 라이브러리를 활용한 데이터 분석』, 웨스 맥키니
+- 『Python for Data Analysis』, Wes McKinney

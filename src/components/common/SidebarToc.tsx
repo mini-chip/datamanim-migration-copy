@@ -207,19 +207,16 @@ export default function SidebarToc({
 
                 <div className="flex grow flex-col p-4 overflow-y-auto bg-white dark:bg-gray-900">
                   <div className="flex flex-col h-30 items-center justify-center px-4">
-                    <Image
-                      src="/img/logo.png"
-                      alt="Logo"
-                      width={316}
-                      height={154}
-                      className="h-16 w-auto mb-2 object-contain"
-                      onClick={() => router.push("/")}
-                    />
                     <Link
                       href="/"
-                      className="text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                      className="flex flex-col items-center gap-2 cursor-pointer"
                     >
-                      DataManim
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-lg">
+                        <span className="text-white font-bold text-lg">DS</span>
+                      </div>
+                      <span className="text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors">
+                        DataStudy
+                      </span>
                     </Link>
                   </div>
                   <nav className="flex flex-1 flex-col py-2">
@@ -237,21 +234,18 @@ export default function SidebarToc({
       <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-80 lg:flex-col border-r border-gray-200 dark:border-gray-700">
         <div className="flex grow flex-col overflow-y-auto bg-white dark:bg-gray-900 p-4 gap-2">
           <div className="flex flex-col items-center">
-            <Image
-              src="/img/logo.png"
-              alt="Logo"
-              width={211}
-              height={103}
-              className="w-40 mb-2"
-              onClick={() => router.push("/")}
-            />
+            <Link
+              href="/"
+              className="flex flex-col items-center gap-2 cursor-pointer"
+            >
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-2 rounded-lg">
+                <span className="text-white font-bold text-lg">DS</span>
+              </div>
+              <span className="text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors">
+                DataStudy
+              </span>
+            </Link>
           </div>
-          <Link
-            href="/"
-            className="text-base font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
-          >
-            DataManim
-          </Link>
           <nav className="flex flex-1 flex-col">
             {toc.groups.map((group) => (
               <TocGroup key={group.title} group={group} />

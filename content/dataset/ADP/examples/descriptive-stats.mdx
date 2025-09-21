@@ -1,0 +1,68 @@
+# ADP 예제문제 1 - 기술통계
+
+## 문제 설명
+
+주어진 데이터에 대해 기술통계량을 계산하고 분포를 분석하시오.
+
+## 데이터 준비
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+# 샘플 데이터
+np.random.seed(42)
+scores = np.random.normal(75, 15, 100)  # 평균 75, 표준편차 15인 정규분포
+df = pd.DataFrame({'score': scores})
+```
+
+## 문제 1: 중심경향성 측도
+
+**Q1.** 평균, 중앙값, 최빈값을 계산하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+mean_score = df['score'].mean()
+median_score = df['score'].median()
+mode_score = df['score'].mode()[0]
+
+print(f"평균: {mean_score:.2f}")
+print(f"중앙값: {median_score:.2f}")
+print(f"최빈값: {mode_score:.2f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 2: 산포도 측도
+
+**Q2.** 분산, 표준편차, 범위를 계산하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+variance = df['score'].var(ddof=1)
+std_dev = df['score'].std(ddof=1)
+score_range = df['score'].max() - df['score'].min()
+
+print(f"분산: {variance:.2f}")
+print(f"표준편차: {std_dev:.2f}")
+print(f"범위: {score_range:.2f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 3: 정규성 검정
+
+**Q3.** 샤피로-윌크 검정을 수행하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+statistic, p_value = stats.shapiro(df['score'])
+print(f"검정통계량: {statistic:.4f}")
+print(f"p-값: {p_value:.4f}")
+
+if p_value > 0.05:
+    print("정규분포를 따른다고 볼 수 있습니다.")
+else:
+    print("정규분포를 따르지 않습니다.")
+```
+</CollapsibleCodeCell>

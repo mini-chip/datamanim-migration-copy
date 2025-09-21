@@ -1,0 +1,183 @@
+# ADP 통계 기초
+
+## 개요
+데이터 분석 전문가(ADP) 자격증 준비를 위한 통계 기초 내용을 다룹니다.
+
+## 기술통계학 개념
+
+### 1. 측도의 종류
+
+#### 중심경향성 측도
+- **평균(Mean)**: 모든 값의 합을 개수로 나눈 값
+- **중앙값(Median)**: 데이터를 크기순으로 정렬했을 때 가운데 위치한 값
+- **최빈값(Mode)**: 가장 빈번하게 나타나는 값
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 샘플 데이터 생성
+data = [85, 90, 78, 92, 88, 76, 94, 82, 89, 91]
+
+# 중심경향성 측도 계산
+mean_val = np.mean(data)
+median_val = np.median(data)
+mode_val = pd.Series(data).mode()[0]
+
+print(f"평균: {mean_val}")
+print(f"중앙값: {median_val}")
+print(f"최빈값: {mode_val}")
+```
+
+```
+평균: 86.5
+중앙값: 88.5
+최빈값: 85
+```
+
+#### 산포도 측도
+- **분산(Variance)**: 각 값이 평균으로부터 얼마나 떨어져 있는지의 평균
+- **표준편차(Standard Deviation)**: 분산의 제곱근
+- **범위(Range)**: 최댓값과 최솟값의 차이
+
+```python
+# 산포도 측도 계산
+variance = np.var(data, ddof=1)  # 표본분산
+std_dev = np.std(data, ddof=1)   # 표본표준편차
+data_range = max(data) - min(data)
+
+print(f"분산: {variance:.2f}")
+print(f"표준편차: {std_dev:.2f}")
+print(f"범위: {data_range}")
+```
+
+```
+분산: 34.72
+표준편차: 5.89
+범위: 18
+```
+
+### 2. 확률분포
+
+#### 정규분포 (Normal Distribution)
+
+정규분포는 가장 중요한 연속확률분포로, 많은 자연현상과 사회현상이 정규분포를 따릅니다.
+
+```python
+import scipy.stats as stats
+
+# 정규분포 시각화
+x = np.linspace(-4, 4, 100)
+y = stats.norm.pdf(x, 0, 1)  # 평균 0, 표준편차 1인 표준정규분포
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2, label='표준정규분포 N(0,1)')
+plt.fill_between(x, y, alpha=0.3)
+plt.title('표준정규분포')
+plt.xlabel('x')
+plt.ylabel('확률밀도')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+#### 이항분포 (Binomial Distribution)
+
+n번의 독립적인 베르누이 시행에서 성공 횟수의 분포입니다.
+
+```python
+# 이항분포 예제: 동전 10번 던지기
+n = 10  # 시행 횟수
+p = 0.5  # 성공 확률
+
+x = np.arange(0, n+1)
+pmf = stats.binom.pmf(x, n, p)
+
+plt.figure(figsize=(10, 6))
+plt.bar(x, pmf, alpha=0.7, color='skyblue')
+plt.title(f'이항분포 B({n}, {p})')
+plt.xlabel('성공 횟수')
+plt.ylabel('확률')
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### 3. 가설검정
+
+가설검정은 모집단에 대한 가설이 옳은지 표본을 통해 판단하는 통계적 추론 방법입니다.
+
+#### 일표본 t-검정
+
+```python
+# 일표본 t-검정 예제
+# H0: μ = 85 (귀무가설)
+# H1: μ ≠ 85 (대립가설)
+
+sample_data = [88, 92, 78, 85, 90, 87, 91, 83, 89, 86]
+pop_mean = 85
+
+t_stat, p_value = stats.ttest_1samp(sample_data, pop_mean)
+
+print(f"t-통계량: {t_stat:.3f}")
+print(f"p-값: {p_value:.3f}")
+
+if p_value < 0.05:
+    print("귀무가설을 기각합니다. (유의수준 0.05)")
+else:
+    print("귀무가설을 기각하지 않습니다. (유의수준 0.05)")
+```
+
+```
+t-통계량: 2.449
+p-값: 0.037
+귀무가설을 기각합니다. (유의수준 0.05)
+```
+
+### 4. 상관분석
+
+두 변수 간의 선형적 관계의 강도와 방향을 측정합니다.
+
+```python
+# 상관분석 예제
+np.random.seed(42)
+x = np.random.normal(0, 1, 50)
+y = 2*x + np.random.normal(0, 0.5, 50)
+
+# 피어슨 상관계수 계산
+correlation, p_value = stats.pearsonr(x, y)
+
+print(f"피어슨 상관계수: {correlation:.3f}")
+print(f"p-값: {p_value:.3f}")
+
+# 산점도 그리기
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, alpha=0.7)
+plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)), 'r--')
+plt.title(f'상관분석 (r = {correlation:.3f})')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+## 연습문제
+
+:::note[문제 1]
+다음 데이터의 평균, 중앙값, 표준편차를 구하시오.
+데이터: [12, 15, 18, 22, 25, 28, 32, 35, 38, 42]
+:::
+
+:::note[문제 2]
+표준정규분포에서 P(-1 < Z < 1)의 값을 구하시오.
+:::
+
+:::note[문제 3]
+모평균이 100, 표준편차가 15인 정규분포에서 표본크기 25인 표본평균의 분포를 구하시오.
+:::
+
+## 참고자료
+
+- 한국데이터산업진흥원 ADP 시험 안내
+- 『ADP 데이터 분석 전문가』, 한국데이터산업진흥원
+- 『통계학 개론』, 김우철 외

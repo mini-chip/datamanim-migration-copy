@@ -46,7 +46,6 @@ export default function PageToc({ className = "" }: PageTocProps) {
       setToc(tocItems);
     }, 500);
 
-
     return () => clearTimeout(timer);
   }, []);
 

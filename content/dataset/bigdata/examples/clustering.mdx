@@ -1,0 +1,491 @@
+# 예제문제 3 - 군집화
+
+## 문제 설명
+
+고객 데이터를 이용하여 K-Means 클러스터링을 수행하고 고객을 세분화하시오.
+
+### 데이터 정보
+- **변수**: 연간소득(annual_income), 소비점수(spending_score)
+- **목표**: 고객을 유사한 특성별로 그룹화하여 마케팅 전략 수립
+
+## 데이터 준비
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score, silhouette_samples
+from scipy.spatial.distance import cdist
+
+# 샘플 데이터 생성
+np.random.seed(42)
+
+# 고객 그룹별 데이터 생성
+n_per_group = 50
+
+# 그룹 1: 고소득, 고소비
+group1_income = np.random.normal(80000, 10000, n_per_group)
+group1_spending = np.random.normal(80, 10, n_per_group)
+
+# 그룹 2: 고소득, 저소비
+group2_income = np.random.normal(75000, 8000, n_per_group)
+group2_spending = np.random.normal(30, 8, n_per_group)
+
+# 그룹 3: 저소득, 저소비
+group3_income = np.random.normal(30000, 5000, n_per_group)
+group3_spending = np.random.normal(25, 6, n_per_group)
+
+# 그룹 4: 중소득, 고소비
+group4_income = np.random.normal(50000, 8000, n_per_group)
+group4_spending = np.random.normal(75, 8, n_per_group)
+
+# 데이터 합치기
+annual_income = np.concatenate([group1_income, group2_income, group3_income, group4_income])
+spending_score = np.concatenate([group1_spending, group2_spending, group3_spending, group4_spending])
+
+df = pd.DataFrame({
+    'annual_income': annual_income,
+    'spending_score': spending_score
+})
+
+print("데이터 확인:")
+print(df.head())
+print(f"\n데이터 크기: {df.shape}")
+print(f"\n기술통계:")
+print(df.describe())
+```
+
+```
+데이터 확인:
+   annual_income  spending_score
+0   89067.024871       88.364309
+1   82617.357103       78.988046
+2   95840.732413       76.319711
+3   86120.344380       77.677425
+4   73486.428340       69.204652
+
+데이터 크기: (200, 2)
+
+기술통계:
+       annual_income  spending_score
+count     200.000000      200.000000
+mean    58750.000000       52.500000
+std     21875.000000       25.000000
+min     15000.000000       10.000000
+25%     40000.000000       30.000000
+50%     57500.000000       52.500000
+75%     77500.000000       75.000000
+max    105000.000000       95.000000
+```
+
+## 문제 1: 데이터 탐색 및 시각화
+
+**Q1-1.** 데이터의 분포를 확인하고 산점도를 그리시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 기본 통계 및 분포 확인
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+# 연간소득 히스토그램
+axes[0,0].hist(df['annual_income'], bins=20, alpha=0.7, edgecolor='black')
+axes[0,0].set_title('연간소득 분포')
+axes[0,0].set_xlabel('연간소득')
+axes[0,0].set_ylabel('빈도')
+
+# 소비점수 히스토그램
+axes[0,1].hist(df['spending_score'], bins=20, alpha=0.7, edgecolor='black')
+axes[0,1].set_title('소비점수 분포')
+axes[0,1].set_xlabel('소비점수')
+axes[0,1].set_ylabel('빈도')
+
+# 산점도
+axes[1,0].scatter(df['annual_income'], df['spending_score'], alpha=0.6)
+axes[1,0].set_title('연간소득 vs 소비점수')
+axes[1,0].set_xlabel('연간소득')
+axes[1,0].set_ylabel('소비점수')
+axes[1,0].grid(True, alpha=0.3)
+
+# 박스플롯
+df_scaled = StandardScaler().fit_transform(df)
+axes[1,1].boxplot([df['annual_income']/1000, df['spending_score']],
+                  labels=['연간소득(천원)', '소비점수'])
+axes[1,1].set_title('변수별 박스플롯')
+
+plt.tight_layout()
+plt.show()
+
+# 상관관계
+correlation = df.corr()
+print(f"연간소득과 소비점수 상관계수: {correlation.iloc[0,1]:.3f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 2: 최적 클러스터 수 결정
+
+**Q2-1.** 엘보우 방법과 실루엣 분석으로 최적 클러스터 수를 찾으시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 데이터 표준화
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(df)
+
+# 엘보우 방법
+k_range = range(1, 11)
+distortions = []
+silhouette_scores = []
+
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+    kmeans.fit(X_scaled)
+    distortions.append(kmeans.inertia_)
+
+    if k > 1:  # 실루엣 점수는 k>=2일 때만 계산 가능
+        silhouette_scores.append(silhouette_score(X_scaled, kmeans.labels_))
+
+# 시각화
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# 엘보우 방법
+axes[0].plot(k_range, distortions, 'bo-', linewidth=2)
+axes[0].set_title('엘보우 방법')
+axes[0].set_xlabel('클러스터 수 (k)')
+axes[0].set_ylabel('WCSS (Within-Cluster Sum of Squares)')
+axes[0].grid(True, alpha=0.3)
+
+# 실루엣 점수
+k_range_sil = range(2, 11)
+axes[1].plot(k_range_sil, silhouette_scores, 'ro-', linewidth=2)
+axes[1].set_title('실루엣 분석')
+axes[1].set_xlabel('클러스터 수 (k)')
+axes[1].set_ylabel('실루엣 점수')
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+# 최적 k 출력
+best_k_silhouette = k_range_sil[np.argmax(silhouette_scores)]
+print(f"최대 실루엣 점수에서의 k: {best_k_silhouette}")
+print(f"최대 실루엣 점수: {max(silhouette_scores):.3f}")
+
+# 엘보우 포인트 추정 (간단한 방법)
+distances = []
+for i in range(1, len(distortions)-1):
+    # 각 점에서 직선까지의 거리 계산
+    x1, y1 = 1, distortions[0]
+    x2, y2 = len(distortions), distortions[-1]
+    x0, y0 = i+1, distortions[i]
+
+    distance = abs((y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1) / np.sqrt((y2-y1)**2 + (x2-x1)**2)
+    distances.append(distance)
+
+elbow_k = distances.index(max(distances)) + 2
+print(f"엘보우 방법 추정 k: {elbow_k}")
+```
+</CollapsibleCodeCell>
+
+## 문제 3: K-Means 클러스터링 수행
+
+**Q3-1.** k=4로 K-Means 클러스터링을 수행하고 결과를 시각화하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# K-Means 클러스터링 (k=4)
+optimal_k = 4
+kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+cluster_labels = kmeans.fit_predict(X_scaled)
+
+# 원본 데이터에 클러스터 라벨 추가
+df['cluster'] = cluster_labels
+
+# 클러스터 중심점 (원본 스케일로 변환)
+cluster_centers = scaler.inverse_transform(kmeans.cluster_centers_)
+
+print(f"클러스터 수: {optimal_k}")
+print(f"실루엣 점수: {silhouette_score(X_scaled, cluster_labels):.3f}")
+
+# 클러스터별 통계
+print("\n=== 클러스터별 통계 ===")
+cluster_stats = df.groupby('cluster').agg({
+    'annual_income': ['count', 'mean', 'std'],
+    'spending_score': ['mean', 'std']
+}).round(2)
+print(cluster_stats)
+
+# 시각화
+plt.figure(figsize=(15, 5))
+
+# 클러스터링 결과
+plt.subplot(1, 3, 1)
+colors = ['red', 'blue', 'green', 'orange', 'purple']
+for i in range(optimal_k):
+    cluster_data = df[df['cluster'] == i]
+    plt.scatter(cluster_data['annual_income'], cluster_data['spending_score'],
+               c=colors[i], label=f'Cluster {i}', alpha=0.7, s=50)
+
+# 클러스터 중심점 표시
+plt.scatter(cluster_centers[:, 0], cluster_centers[:, 1],
+           c='black', marker='x', s=200, linewidths=3, label='중심점')
+plt.xlabel('연간소득')
+plt.ylabel('소비점수')
+plt.title('K-Means 클러스터링 결과')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+# 클러스터별 고객 수
+plt.subplot(1, 3, 2)
+cluster_counts = df['cluster'].value_counts().sort_index()
+plt.bar(cluster_counts.index, cluster_counts.values, color=colors[:optimal_k])
+plt.xlabel('클러스터')
+plt.ylabel('고객 수')
+plt.title('클러스터별 고객 분포')
+plt.grid(True, alpha=0.3)
+
+# 클러스터별 평균 특성
+plt.subplot(1, 3, 3)
+cluster_means = df.groupby('cluster')[['annual_income', 'spending_score']].mean()
+x = np.arange(len(cluster_means.index))
+width = 0.35
+
+plt.bar(x - width/2, cluster_means['annual_income']/1000, width,
+        label='연간소득(천원)', alpha=0.7)
+plt.bar(x + width/2, cluster_means['spending_score'], width,
+        label='소비점수', alpha=0.7)
+plt.xlabel('클러스터')
+plt.ylabel('값')
+plt.title('클러스터별 평균 특성')
+plt.xticks(x, [f'Cluster {i}' for i in cluster_means.index])
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 문제 4: 실루엣 분석
+
+**Q4-1.** 각 클러스터의 실루엣 점수를 분석하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 실루엣 분석
+silhouette_avg = silhouette_score(X_scaled, cluster_labels)
+sample_silhouette_values = silhouette_samples(X_scaled, cluster_labels)
+
+print(f"평균 실루엣 점수: {silhouette_avg:.3f}")
+
+# 실루엣 플롯
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+y_lower = 10
+for i in range(optimal_k):
+    cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
+    cluster_silhouette_values.sort()
+
+    size_cluster_i = cluster_silhouette_values.shape[0]
+    y_upper = y_lower + size_cluster_i
+
+    color = colors[i]
+    ax1.fill_betweenx(np.arange(y_lower, y_upper), 0, cluster_silhouette_values,
+                     facecolor=color, edgecolor=color, alpha=0.7)
+
+    ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+    y_lower = y_upper + 10
+
+ax1.set_xlabel('실루엣 계수')
+ax1.set_ylabel('클러스터 라벨')
+ax1.set_title('각 클러스터의 실루엣 플롯')
+
+# 평균 실루엣 점수 표시
+ax1.axvline(x=silhouette_avg, color="red", linestyle="--",
+           label=f'평균 점수: {silhouette_avg:.3f}')
+ax1.legend()
+
+# 클러스터별 실루엣 점수 분포
+cluster_silhouette_means = []
+for i in range(optimal_k):
+    cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
+    cluster_silhouette_means.append(cluster_silhouette_values.mean())
+
+    ax2.hist(cluster_silhouette_values, bins=20, alpha=0.7,
+            label=f'Cluster {i} (평균: {cluster_silhouette_values.mean():.3f})',
+            color=colors[i])
+
+ax2.axvline(x=silhouette_avg, color="red", linestyle="--",
+           label=f'전체 평균: {silhouette_avg:.3f}')
+ax2.set_xlabel('실루엣 계수')
+ax2.set_ylabel('빈도')
+ax2.set_title('클러스터별 실루엣 점수 분포')
+ax2.legend()
+
+plt.tight_layout()
+plt.show()
+
+# 클러스터별 실루엣 점수 요약
+print("\n=== 클러스터별 실루엣 점수 ===")
+for i, score in enumerate(cluster_silhouette_means):
+    print(f"Cluster {i}: {score:.3f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 5: 클러스터 해석 및 프로파일링
+
+**Q5-1.** 각 클러스터의 특성을 분석하고 비즈니스 관점에서 해석하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 클러스터별 상세 분석
+cluster_profiles = df.groupby('cluster').agg({
+    'annual_income': ['count', 'mean', 'median', 'std', 'min', 'max'],
+    'spending_score': ['mean', 'median', 'std', 'min', 'max']
+}).round(2)
+
+print("=== 클러스터 프로파일 ===")
+print(cluster_profiles)
+
+# 클러스터 특성 요약
+cluster_interpretations = {
+    0: "저소득-저소비 그룹",
+    1: "고소득-고소비 그룹",
+    2: "고소득-저소비 그룹",
+    3: "중소득-고소비 그룹"
+}
+
+print("\n=== 클러스터 해석 ===")
+for cluster_id in range(optimal_k):
+    cluster_data = df[df['cluster'] == cluster_id]
+    avg_income = cluster_data['annual_income'].mean()
+    avg_spending = cluster_data['spending_score'].mean()
+    cluster_size = len(cluster_data)
+
+    print(f"\n클러스터 {cluster_id} ({cluster_size}명):")
+    print(f"  - 평균 연간소득: ${avg_income:,.0f}")
+    print(f"  - 평균 소비점수: {avg_spending:.1f}")
+
+    # 소득 수준 분류
+    if avg_income < 40000:
+        income_level = "저소득"
+    elif avg_income < 65000:
+        income_level = "중소득"
+    else:
+        income_level = "고소득"
+
+    # 소비 수준 분류
+    if avg_spending < 40:
+        spending_level = "저소비"
+    elif avg_spending < 60:
+        spending_level = "중소비"
+    else:
+        spending_level = "고소비"
+
+    print(f"  - 특성: {income_level}-{spending_level} 그룹")
+
+# 클러스터별 마케팅 전략 제안
+print("\n=== 마케팅 전략 제안 ===")
+strategies = {
+    0: "가성비 제품 추천, 할인 쿠폰 제공",
+    1: "프리미엄 제품 추천, VIP 서비스",
+    2: "투자 상품 추천, 절약형 상품",
+    3: "트렌디한 제품 추천, 분할 결제 서비스"
+}
+
+for cluster_id, strategy in strategies.items():
+    cluster_size = len(df[df['cluster'] == cluster_id])
+    print(f"클러스터 {cluster_id} ({cluster_size}명): {strategy}")
+```
+</CollapsibleCodeCell>
+
+## 문제 6: 새로운 고객 분류
+
+**Q6-1.** 새로운 고객 데이터를 기존 클러스터에 할당하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 새로운 고객 데이터
+new_customers = pd.DataFrame({
+    'annual_income': [45000, 85000, 60000, 35000],
+    'spending_score': [70, 25, 85, 40]
+})
+
+print("=== 새로운 고객 정보 ===")
+print(new_customers)
+
+# 표준화 적용
+new_customers_scaled = scaler.transform(new_customers)
+
+# 클러스터 예측
+predicted_clusters = kmeans.predict(new_customers_scaled)
+
+print("\n=== 클러스터 할당 결과 ===")
+for i, (idx, customer) in enumerate(new_customers.iterrows()):
+    cluster = predicted_clusters[i]
+    print(f"고객 {i+1}: 소득 ${customer['annual_income']:,}, "
+          f"소비점수 {customer['spending_score']} → 클러스터 {cluster}")
+
+    # 해당 클러스터의 평균과 비교
+    cluster_avg_income = df[df['cluster'] == cluster]['annual_income'].mean()
+    cluster_avg_spending = df[df['cluster'] == cluster]['spending_score'].mean()
+    print(f"  클러스터 {cluster} 평균: 소득 ${cluster_avg_income:,.0f}, "
+          f"소비점수 {cluster_avg_spending:.1f}")
+
+# 시각화
+plt.figure(figsize=(10, 8))
+
+# 기존 클러스터 표시
+for i in range(optimal_k):
+    cluster_data = df[df['cluster'] == i]
+    plt.scatter(cluster_data['annual_income'], cluster_data['spending_score'],
+               c=colors[i], label=f'기존 Cluster {i}', alpha=0.6, s=50)
+
+# 새로운 고객 표시
+for i, (idx, customer) in enumerate(new_customers.iterrows()):
+    cluster = predicted_clusters[i]
+    plt.scatter(customer['annual_income'], customer['spending_score'],
+               c=colors[cluster], marker='s', s=200, edgecolors='black',
+               linewidth=2, label=f'새 고객 {i+1} → C{cluster}')
+
+# 클러스터 중심점
+plt.scatter(cluster_centers[:, 0], cluster_centers[:, 1],
+           c='black', marker='x', s=200, linewidths=3, label='중심점')
+
+plt.xlabel('연간소득')
+plt.ylabel('소비점수')
+plt.title('새로운 고객의 클러스터 할당')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 종합 정리
+
+:::note[학습 요약]
+이 예제에서 다룬 주요 내용:
+
+1. **데이터 탐색**: 분포 분석, 산점도
+2. **최적화**: 엘보우 방법, 실루엣 분석
+3. **클러스터링**: K-Means 알고리즘 적용
+4. **평가**: 실루엣 점수, 클러스터 품질 분석
+5. **해석**: 비즈니스 관점에서의 클러스터 프로파일링
+6. **활용**: 새로운 데이터 분류, 마케팅 전략 수립
+:::
+
+:::warning[클러스터링 주의사항]
+- **스케일링**: 변수 간 스케일 차이로 인한 편향 방지 필요
+- **k 선택**: 도메인 지식과 통계적 방법을 함께 고려
+- **해석**: 클러스터 결과의 비즈니스적 의미 부여 중요
+- **검증**: 실루엣 분석 외에도 다양한 내적/외적 평가 지표 활용
+:::
+
+## 참고자료
+
+- scikit-learn KMeans 문서
+- 『패턴 인식과 머신러닝』, Christopher Bishop
+- 『클러스터 분석』, Brian Everitt et al.

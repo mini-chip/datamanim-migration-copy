@@ -21,8 +21,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Datamanim - 데이터 분석 학습 플랫폼",
-    template: "%s | Datamanim"
+    default: "DataStudy - 데이터 분석 학습 플랫폼",
+    template: "%s | DataStudy"
   },
   description: "ADP자격증 준비를 위한 데이터 분석 학습 콘텐츠",
   keywords: [
@@ -77,7 +77,7 @@ export default async function RootLayout({
           <SiteShell toc={toc}>{children}</SiteShell>
           <footer>
             <div className="flex flex-row text-left text-sm text-gray-500 py-4">
-              By DataManim &copy; Copyright 2022.
+              By DataStudy &copy; Copyright 2022.
             </div>
           </footer>
         </ThemeProvider>

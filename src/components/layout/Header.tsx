@@ -39,7 +39,7 @@ export default function Header({
       <div className="flex flex-1 items-center justify-between">
         {/* Logo/Title - Only show on mobile */}
         <Link href="/" className="flex items-center lg:hidden">
-          <h1 className="text-lg font-bold text-sidebar-accent dark:text-purple-400">DataManim</h1>
+          <h1 className="text-lg font-bold text-sidebar-accent dark:text-purple-400">DataStudy</h1>
         </Link>
 
         {/* Right side actions */}

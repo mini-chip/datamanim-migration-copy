@@ -1,0 +1,257 @@
+# 예제문제 1 - 선형회귀
+
+## 문제 설명
+
+아래 데이터를 이용하여 선형회귀 모델을 구축하고 성능을 평가하시오.
+
+### 데이터 정보
+- **독립변수**: 경력년수 (years_experience)
+- **종속변수**: 연봉 (salary)
+- **목표**: 경력년수를 이용해 연봉을 예측하는 모델 구축
+
+## 데이터 준비
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+# 샘플 데이터 생성
+np.random.seed(42)
+data = {
+    'years_experience': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    'salary': [35000, 40000, 45000, 50000, 55000, 65000, 70000, 75000, 80000,
+               85000, 90000, 95000, 100000, 105000, 110000]
+}
+
+df = pd.DataFrame(data)
+print("데이터 확인:")
+print(df.head())
+print(f"\n데이터 크기: {df.shape}")
+```
+
+```
+데이터 확인:
+   years_experience  salary
+0                 1   35000
+1                 2   40000
+2                 3   45000
+3                 4   50000
+4                 5   55000
+
+데이터 크기: (15, 2)
+```
+
+## 문제 1: 데이터 탐색 및 시각화
+
+**Q1-1.** 경력년수와 연봉 간의 상관계수를 구하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 상관계수 계산
+correlation = df['years_experience'].corr(df['salary'])
+print(f"상관계수: {correlation:.4f}")
+
+# 산점도 그리기
+plt.figure(figsize=(10, 6))
+plt.scatter(df['years_experience'], df['salary'], alpha=0.7, color='blue')
+plt.xlabel('경력년수')
+plt.ylabel('연봉')
+plt.title('경력년수 vs 연봉')
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+</CollapsibleCodeCell>
+
+**Q1-2.** 기술통계량을 확인하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 기술통계량
+print("기술통계량:")
+print(df.describe())
+
+print("\n각 변수별 정보:")
+print(f"경력년수 - 평균: {df['years_experience'].mean():.2f}, 표준편차: {df['years_experience'].std():.2f}")
+print(f"연봉 - 평균: {df['salary'].mean():.2f}, 표준편차: {df['salary'].std():.2f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 2: 모델 구축 및 학습
+
+**Q2-1.** 데이터를 훈련용과 테스트용으로 8:2 비율로 분할하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 독립변수와 종속변수 분리
+X = df[['years_experience']]
+y = df['salary']
+
+# 훈련/테스트 데이터 분할
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print(f"훈련 데이터 크기: {X_train.shape}")
+print(f"테스트 데이터 크기: {X_test.shape}")
+```
+</CollapsibleCodeCell>
+
+**Q2-2.** 선형회귀 모델을 학습시키고 회귀계수와 절편을 구하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 선형회귀 모델 생성 및 학습
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# 회귀계수와 절편
+print(f"회귀계수: {model.coef_[0]:.2f}")
+print(f"절편: {model.intercept_:.2f}")
+print(f"회귀식: y = {model.coef_[0]:.2f}x + {model.intercept_:.2f}")
+```
+</CollapsibleCodeCell>
+
+## 문제 3: 모델 평가
+
+**Q3-1.** 테스트 데이터에 대한 예측을 수행하고 평가지표를 계산하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 예측 수행
+y_pred = model.predict(X_test)
+
+# 평가지표 계산
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("=== 모델 평가 결과 ===")
+print(f"MSE (평균제곱오차): {mse:.2f}")
+print(f"RMSE (평균제곱근오차): {rmse:.2f}")
+print(f"MAE (평균절대오차): {mae:.2f}")
+print(f"R² (결정계수): {r2:.4f}")
+```
+</CollapsibleCodeCell>
+
+**Q3-2.** 예측 결과를 시각화하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 예측 결과 시각화
+plt.figure(figsize=(12, 5))
+
+# 회귀선과 데이터점
+plt.subplot(1, 2, 1)
+plt.scatter(X_train, y_train, alpha=0.7, color='blue', label='훈련 데이터')
+plt.scatter(X_test, y_test, alpha=0.7, color='red', label='테스트 데이터')
+
+# 회귀선 그리기
+x_range = np.linspace(df['years_experience'].min(), df['years_experience'].max(), 100)
+y_range = model.predict(x_range.reshape(-1, 1))
+plt.plot(x_range, y_range, color='green', linewidth=2, label='회귀선')
+
+plt.xlabel('경력년수')
+plt.ylabel('연봉')
+plt.title('선형회귀 결과')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+# 실제값 vs 예측값
+plt.subplot(1, 2, 2)
+plt.scatter(y_test, y_pred, alpha=0.7)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', linewidth=2)
+plt.xlabel('실제값')
+plt.ylabel('예측값')
+plt.title('실제값 vs 예측값')
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+</CollapsibleCodeCell>
+
+## 문제 4: 새로운 데이터 예측
+
+**Q4-1.** 경력 16년인 직원의 예상 연봉을 예측하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 새로운 데이터 예측
+new_experience = [[16]]
+predicted_salary = model.predict(new_experience)
+
+print(f"경력 16년 직원의 예상 연봉: {predicted_salary[0]:,.0f}원")
+
+# 신뢰구간 계산 (간단한 방법)
+residuals = y_test - y_pred
+std_error = np.std(residuals)
+
+print(f"예측 오차의 표준편차: {std_error:.2f}")
+print(f"95% 신뢰구간: {predicted_salary[0] - 1.96*std_error:,.0f} ~ {predicted_salary[0] + 1.96*std_error:,.0f}원")
+```
+</CollapsibleCodeCell>
+
+## 문제 5: 잔차 분석
+
+**Q5-1.** 잔차를 계산하고 잔차 플롯을 그려 모델의 적합성을 검토하시오.
+
+<CollapsibleCodeCell language="python" defaultCollapsed={true}>
+```python
+# 전체 데이터에 대한 예측과 잔차 계산
+y_pred_all = model.predict(X)
+residuals_all = y - y_pred_all
+
+plt.figure(figsize=(12, 5))
+
+# 잔차 플롯
+plt.subplot(1, 2, 1)
+plt.scatter(y_pred_all, residuals_all, alpha=0.7)
+plt.axhline(y=0, color='red', linestyle='--')
+plt.xlabel('예측값')
+plt.ylabel('잔차')
+plt.title('잔차 플롯')
+plt.grid(True, alpha=0.3)
+
+# 잔차의 히스토그램
+plt.subplot(1, 2, 2)
+plt.hist(residuals_all, bins=10, alpha=0.7, edgecolor='black')
+plt.xlabel('잔차')
+plt.ylabel('빈도')
+plt.title('잔차 분포')
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+# 잔차 통계
+print(f"잔차 평균: {residuals_all.mean():.2f}")
+print(f"잔차 표준편차: {residuals_all.std():.2f}")
+```
+</CollapsibleCodeCell>
+
+## 종합 정리
+
+:::note[학습 요약]
+이 예제에서 다룬 주요 내용:
+
+1. **데이터 탐색**: 상관분석, 기술통계량
+2. **모델 구축**: 선형회귀 모델 학습
+3. **모델 평가**: MSE, RMSE, MAE, R² 계산
+4. **시각화**: 산점도, 회귀선, 잔차 플롯
+5. **예측**: 새로운 데이터에 대한 예측 수행
+:::
+
+:::warning[주의사항]
+- 선형회귀는 선형 관계를 가정하므로 비선형 관계에는 적합하지 않음
+- 이상치에 민감하므로 데이터 전처리가 중요
+- 다중공선성 문제를 고려해야 함
+:::
+
+## 참고자료
+
+- scikit-learn Linear Regression 문서
+- 『파이썬 머신러닝 완벽 가이드』, 권철민
+- 『Introduction to Statistical Learning』, James et al.
