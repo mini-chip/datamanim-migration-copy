@@ -26,14 +26,11 @@ group_b = np.random.normal(75, 12, 35)
 
 **Q2.** 두 그룹의 평균이 같은지 검정하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-t_stat, p_value = stats.ttest_ind(group_a, group_b)
+<CollapsibleCodeCell code={`t_stat, p_value = stats.ttest_ind(group_a, group_b)
 print(f"t-통계량: {t_stat:.4f}")
 print(f"p-값: {p_value:.4f}")
 
 if p_value < 0.05:
     print("두 그룹의 평균이 다릅니다.")
 else:
-    print("두 그룹의 평균이 같다고 볼 수 있습니다.")
-```
+    print("두 그룹의 평균이 같다고 볼 수 있습니다.")`} />

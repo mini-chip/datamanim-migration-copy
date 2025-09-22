@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = {
   /** 코드 문자열 */
-  code: string;
+  code?: string;
   /** 결과: 테이블/이미지 등 ReactNode */
   children?: React.ReactNode;
   className?: string;
@@ -25,8 +25,8 @@ export default function CollapsibleCodeCell({
   language,
   defaultCollapsed
 }: Props) {
-  // code가 필수이므로 바로 사용
-  const raw = code.replace(/\r\n?/g, "\n");
+  // code가 필수이므로 바로 사용 (안전 처리)
+  const raw = (code || "").replace(/\r\n?/g, "\n");
 
   // "==== 실행 결과 ====" 구분자 파싱(문자열 결과용)
   const sepRegex = /^\s*#?\s*={2,}\s*실행\s*결과\s*={2,}\s*$/;
