@@ -14,10 +14,6 @@ export default function Home() {
           데이터 분석의 모든 것을 배우는 곳
         </p>
 
-        <pre className="bg-gray-800 p-4 rounded-lg font-mono text-sm mb-6 max-w-md mx-auto">
-          <code className="text-white">광고 한 번 눌러주시겠습니까</code>
-        </pre>
-
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 mb-8 text-white text-center">
           <h2 className="text-2xl font-bold mb-4">
             🎯 데이터 분석 마스터 코스
