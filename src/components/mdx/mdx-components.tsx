@@ -71,8 +71,9 @@ function CustomPre(props: React.ComponentProps<"pre">) {
 
   // collapsible 속성이 있으면 CollapsibleCodeCell 사용
   if (isCollapsible) {
+    const codeContent = codeElement?.props.children || "";
     return (
-      <CollapsibleCodeCell>{codeElement?.props.children}</CollapsibleCodeCell>
+      <CollapsibleCodeCell code={codeContent} />
     );
   }
 
