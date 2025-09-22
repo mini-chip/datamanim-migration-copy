@@ -118,30 +118,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* 학습 통계 */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-8 mb-12 text-white">
-        <h2 className="text-3xl font-bold text-center mb-8">학습 현황</h2>
-        <div className="grid md:grid-cols-3 gap-8 text-center">
-          <div>
-            <div className="text-4xl font-bold mb-2">1,000+</div>
-            <div className="text-lg">누적 학습자</div>
-          </div>
-          <div>
-            <div className="text-4xl font-bold mb-2">50+</div>
-            <div className="text-lg">실습 예제</div>
-          </div>
-          <div>
-            <div className="text-4xl font-bold mb-2">95%</div>
-            <div className="text-lg">합격률</div>
-          </div>
-        </div>
-      </div>
-
-      {/* 오픈채팅 버튼 */}
-      <div className="text-center">
-        <OpenChatButton />
-      </div>
     </div>
   );
 }
