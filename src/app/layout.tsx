@@ -25,19 +25,6 @@ export const metadata: Metadata = {
     template: "%s | DataStudy"
   },
   description: "ADP자격증 준비를 위한 데이터 분석 학습 콘텐츠",
-  keywords: [
-    "데이터 분석",
-    "머신러닝",
-    "Python",
-    "R",
-    "SQL",
-    "데이터 사이언스",
-    "통계",
-    "ADP",
-    "빅데이터",
-    "AI",
-    "인공지능"
-  ],
 
   icons: {
     icon: "/favicon.ico"

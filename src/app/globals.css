@@ -48,6 +48,33 @@ ul:not(.prose ul) {
   list-style-type: disc !important;
   margin-left: 1.25rem !important;
   padding-left: 1.25rem !important;
+
+/* CollapsibleCodeCell 마진 제거 */
+.prose .not-prose {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* CollapsibleCodeCell 뒤에 오는 요소들의 상단 마진도 제거 */
+.prose .not-prose + * {
+  margin-top: 0 !important;
+}
+
+/* CollapsibleCodeCell 앞뒤의 빈 p 태그 숨김 */
+.prose .not-prose + p:empty {
+  display: none !important;
+}
+
+.prose p:empty + .not-prose {
+  margin-top: 0 !important;
+}
+
+.prose p:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+}
 }
 
 ol:not(.prose ol) {

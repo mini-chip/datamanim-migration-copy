@@ -286,34 +286,7 @@ plt.show()
 - 종속변수: 매출액 (단위: 만원)
 :::
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 실기 문제 해답 예시
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-
-# 데이터 로드 (실제 시험에서는 CSV 파일로 제공)
-data = {
-    '광고비': [10, 15, 20, 25, 30, 35, 40],
-    '매출액': [50, 70, 85, 95, 110, 120, 140]
-}
-df = pd.DataFrame(data)
-
-# 모델 학습
-X = df[['광고비']]
-y = df['매출액']
-model = LinearRegression().fit(X, y)
-
-# 예측 및 평가
-y_pred = model.predict(X)
-mse = mean_squared_error(y, y_pred)
-r2 = r2_score(y, y_pred)
-
-print(f"MSE: {mse:.3f}")
-print(f"R²: {r2:.3f}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"R²: {r2:.3f}")`} />
 
 :::warning[실기 문제 2]
 주어진 데이터에 대해 K-Means 클러스터링을 수행하고 최적의 클러스터 수를 엘보우 방법으로 결정하시오.

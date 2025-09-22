@@ -51,239 +51,31 @@ print(f"\n데이터 크기: {df.shape}")
 
 **Q1.** 각 변수의 기술통계량과 상관관계를 분석하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 기술통계량
-print("=== 기술통계량 ===")
-print(df.describe())
-
-# 상관관계 행렬
-print("\n=== 상관관계 행렬 ===")
-correlation_matrix = df.corr()
-print(correlation_matrix)
-
-# 상관관계 히트맵
-plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0, square=True)
-plt.title('변수 간 상관관계')
-plt.show()
-
-# 산점도 행렬
-fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-
-# 교육년수 vs 연봉
-axes[0,0].scatter(df['education'], df['salary'], alpha=0.6)
-axes[0,0].set_xlabel('교육년수')
-axes[0,0].set_ylabel('연봉')
-axes[0,0].set_title('교육년수 vs 연봉')
-
-# 경력년수 vs 연봉
-axes[0,1].scatter(df['experience'], df['salary'], alpha=0.6)
-axes[0,1].set_xlabel('경력년수')
-axes[0,1].set_ylabel('연봉')
-axes[0,1].set_title('경력년수 vs 연봉')
-
-# 나이 vs 연봉
-axes[1,0].scatter(df['age'], df['salary'], alpha=0.6)
-axes[1,0].set_xlabel('나이')
-axes[1,0].set_ylabel('연봉')
-axes[1,0].set_title('나이 vs 연봉')
-
-# 독립변수들 간의 관계
-axes[1,1].scatter(df['education'], df['experience'], alpha=0.6)
-axes[1,1].set_xlabel('교육년수')
-axes[1,1].set_ylabel('경력년수')
-axes[1,1].set_title('교육년수 vs 경력년수')
-
-plt.tight_layout()
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 ## 문제 2: 다중선형회귀 모델 구축
 
 **Q2.** 다중선형회귀 모델을 구축하고 회귀계수를 해석하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# statsmodels를 이용한 회귀분석
-X = df[['education', 'experience', 'age']]
-y = df['salary']
-
-# 상수항 추가
-X_with_const = sm.add_constant(X)
-
-# 회귀모델 적합
-model = sm.OLS(y, X_with_const).fit()
-
-# 회귀분석 결과 출력
-print("=== 회귀분석 결과 ===")
-print(model.summary())
-
-# 회귀계수 해석
-print("\n=== 회귀계수 해석 ===")
-print(f"절편: {model.params['const']:.2f}")
-print(f"교육년수 계수: {model.params['education']:.2f}")
-print(f"경력년수 계수: {model.params['experience']:.2f}")
-print(f"나이 계수: {model.params['age']:.2f}")
-
-print("\n해석:")
-print("- 교육년수가 1년 증가하면 연봉이 약 {:.0f}원 증가".format(model.params['education']))
-print("- 경력년수가 1년 증가하면 연봉이 약 {:.0f}원 증가".format(model.params['experience']))
-print("- 나이가 1세 증가하면 연봉이 약 {:.0f}원 증가".format(model.params['age']))
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print("- 나이가 1세 증가하면 연봉이 약 {:.0f}원 증가".format(model.params['age']))`} />
 
 ## 문제 3: 모델 유의성 검정
 
 **Q3.** F-검정과 t-검정을 통해 모델의 유의성을 검정하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# F-검정 (전체 모델의 유의성)
-print("=== F-검정 결과 ===")
-print(f"F-통계량: {model.fvalue:.4f}")
-print(f"F-검정 p-값: {model.f_pvalue:.6f}")
-
-if model.f_pvalue < 0.05:
-    print("전체 모델이 유의합니다 (p < 0.05)")
-else:
-    print("전체 모델이 유의하지 않습니다 (p >= 0.05)")
-
-# 각 계수의 t-검정
-print("\n=== 개별 계수 t-검정 결과 ===")
-for i, (param, p_val) in enumerate(zip(model.params.index, model.pvalues)):
-    significance = "유의" if p_val < 0.05 else "비유의"
-    print(f"{param}: t={model.tvalues[i]:.4f}, p={p_val:.6f} ({significance})")
-
-# R-squared 해석
-print(f"\n=== 모델 설명력 ===")
-print(f"R-squared: {model.rsquared:.4f}")
-print(f"Adjusted R-squared: {model.rsquared_adj:.4f}")
-print(f"모델이 종속변수 변동의 {model.rsquared*100:.1f}%를 설명합니다")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"모델이 종속변수 변동의 {model.rsquared*100:.1f}%를 설명합니다")`} />
 
 ## 문제 4: 회귀 가정 검진
 
 **Q4.** 선형성, 독립성, 등분산성, 정규성 가정을 검진하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 예측값과 잔차 계산
-fitted_values = model.fittedvalues
-residuals = model.resid
-
-# 회귀 가정 검진 플롯
-fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-
-# 1. 선형성 가정 - 잔차 vs 적합값
-axes[0,0].scatter(fitted_values, residuals, alpha=0.6)
-axes[0,0].axhline(y=0, color='red', linestyle='--')
-axes[0,0].set_xlabel('적합값')
-axes[0,0].set_ylabel('잔차')
-axes[0,0].set_title('잔차 vs 적합값 (선형성 검진)')
-axes[0,0].grid(True, alpha=0.3)
-
-# 2. 정규성 가정 - Q-Q plot
-stats.probplot(residuals, dist="norm", plot=axes[0,1])
-axes[0,1].set_title('Q-Q Plot (정규성 검진)')
-axes[0,1].grid(True, alpha=0.3)
-
-# 3. 등분산성 가정 - 표준화잔차 vs 적합값
-standardized_residuals = residuals / np.std(residuals)
-axes[1,0].scatter(fitted_values, standardized_residuals, alpha=0.6)
-axes[1,0].axhline(y=0, color='red', linestyle='--')
-axes[1,0].set_xlabel('적합값')
-axes[1,0].set_ylabel('표준화 잔차')
-axes[1,0].set_title('표준화 잔차 vs 적합값 (등분산성 검진)')
-axes[1,0].grid(True, alpha=0.3)
-
-# 4. 잔차 히스토그램
-axes[1,1].hist(residuals, bins=15, alpha=0.7, edgecolor='black')
-axes[1,1].set_xlabel('잔차')
-axes[1,1].set_ylabel('빈도')
-axes[1,1].set_title('잔차 분포 (정규성 검진)')
-axes[1,1].grid(True, alpha=0.3)
-
-plt.tight_layout()
-plt.show()
-
-# 정규성 검정 (Shapiro-Wilk)
-shapiro_stat, shapiro_p = stats.shapiro(residuals)
-print(f"=== 정규성 검정 (Shapiro-Wilk) ===")
-print(f"검정통계량: {shapiro_stat:.4f}")
-print(f"p-값: {shapiro_p:.6f}")
-if shapiro_p > 0.05:
-    print("잔차가 정규분포를 따릅니다 (p > 0.05)")
-else:
-    print("잔차가 정규분포를 따르지 않습니다 (p <= 0.05)")
-
-# 등분산성 검정 (Breusch-Pagan)
-try:
-    bp_stat, bp_p, _, _ = het_breuschpagan(residuals, X_with_const)
-    print(f"\n=== 등분산성 검정 (Breusch-Pagan) ===")
-    print(f"검정통계량: {bp_stat:.4f}")
-    print(f"p-값: {bp_p:.6f}")
-    if bp_p > 0.05:
-        print("등분산성 가정을 만족합니다 (p > 0.05)")
-    else:
-        print("이분산성이 존재합니다 (p <= 0.05)")
-except:
-    print("등분산성 검정을 수행할 수 없습니다.")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print("등분산성 검정을 수행할 수 없습니다.")`} />
 
 ## 문제 5: 예측 및 신뢰구간
 
 **Q5.** 새로운 데이터에 대한 예측과 신뢰구간을 구하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 새로운 데이터
-new_data = pd.DataFrame({
-    'education': [18, 16, 20],
-    'experience': [5, 10, 15],
-    'age': [28, 35, 45]
-})
-
-print("=== 새로운 데이터 ===")
-print(new_data)
-
-# 상수항 추가
-new_data_with_const = sm.add_constant(new_data)
-
-# 예측값 계산
-predictions = model.predict(new_data_with_const)
-
-# 예측 구간 계산
-pred_summary = model.get_prediction(new_data_with_const)
-pred_ci = pred_summary.conf_int()
-
-print("\n=== 예측 결과 ===")
-for i in range(len(new_data)):
-    print(f"케이스 {i+1}:")
-    print(f"  교육년수: {new_data.iloc[i]['education']:.0f}년")
-    print(f"  경력년수: {new_data.iloc[i]['experience']:.0f}년")
-    print(f"  나이: {new_data.iloc[i]['age']:.0f}세")
-    print(f"  예측 연봉: {predictions.iloc[i]:,.0f}원")
-    print(f"  95% 신뢰구간: [{pred_ci.iloc[i,0]:,.0f}, {pred_ci.iloc[i,1]:,.0f}]원")
-    print()
-
-# 예측 시각화
-plt.figure(figsize=(10, 6))
-x_pos = range(len(new_data))
-plt.errorbar(x_pos, predictions,
-             yerr=[predictions - pred_ci.iloc[:,0], pred_ci.iloc[:,1] - predictions],
-             fmt='o', capsize=5, capthick=2, markersize=8)
-plt.xlabel('케이스')
-plt.ylabel('예측 연봉')
-plt.title('새로운 데이터 예측 결과 (95% 신뢰구간)')
-plt.xticks(x_pos, [f'케이스{i+1}' for i in range(len(new_data))])
-plt.grid(True, alpha=0.3)
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 ## 종합 정리
 

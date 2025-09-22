@@ -19,19 +19,13 @@ export default function Home() {
         </pre>
 
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-8 mb-8 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">🎯 데이터 분석 마스터 코스</h2>
-          <p className="text-lg mb-6">실무에 바로 적용할 수 있는 데이터 분석 기술을 배워보세요</p>
-          <Link
-            href="https://classroom.datastudy.com/p/bae"
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            강의 보러가기 →
-          </Link>
+          <h2 className="text-2xl font-bold mb-4">
+            🎯 데이터 분석 마스터 코스
+          </h2>
+          <p className="text-lg mb-6">
+            실무에 바로 적용할 수 있는 데이터 분석 기술을 배워보세요
+          </p>
         </div>
-
-        <p className="text-lg mb-8 font-semibold text-blue-600">
-          10회 빅분기 실기 대비 강의
-        </p>
       </div>
 
       {/* 주요 콘텐츠 섹션 */}
@@ -57,7 +51,9 @@ export default function Home() {
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
           <div className="text-center">
             <div className="text-4xl mb-4">🤖</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-800">빅데이터분석기사</h3>
+            <h3 className="text-xl font-bold mb-3 text-gray-800">
+              빅데이터분석기사
+            </h3>
             <p className="text-gray-600 mb-4">
               머신러닝과 딥러닝을 활용한 빅데이터 분석 실무 기술 습득
             </p>
@@ -74,7 +70,9 @@ export default function Home() {
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
           <div className="text-center">
             <div className="text-4xl mb-4">🐼</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-800">Pandas 마스터</h3>
+            <h3 className="text-xl font-bold mb-3 text-gray-800">
+              Pandas 마스터
+            </h3>
             <p className="text-gray-600 mb-4">
               데이터 조작과 분석을 위한 필수 라이브러리 완전 정복
             </p>
@@ -97,22 +95,30 @@ export default function Home() {
           <div className="text-center">
             <div className="text-3xl mb-3">📚</div>
             <h4 className="font-semibold mb-2">체계적 학습</h4>
-            <p className="text-sm text-gray-600">기초부터 실무까지 단계별 커리큘럼</p>
+            <p className="text-sm text-gray-600">
+              기초부터 실무까지 단계별 커리큘럼
+            </p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-3">💻</div>
             <h4 className="font-semibold mb-2">실습 중심</h4>
-            <p className="text-sm text-gray-600">이론과 실습을 병행한 실무형 교육</p>
+            <p className="text-sm text-gray-600">
+              이론과 실습을 병행한 실무형 교육
+            </p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-3">🏆</div>
             <h4 className="font-semibold mb-2">자격증 대비</h4>
-            <p className="text-sm text-gray-600">ADP, 빅분기 등 주요 자격증 완벽 대비</p>
+            <p className="text-sm text-gray-600">
+              ADP, 빅분기 등 주요 자격증 완벽 대비
+            </p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-3">👥</div>
             <h4 className="font-semibold mb-2">커뮤니티</h4>
-            <p className="text-sm text-gray-600">함께 학습하고 성장하는 학습 공동체</p>
+            <p className="text-sm text-gray-600">
+              함께 학습하고 성장하는 학습 공동체
+            </p>
           </div>
         </div>
       </div>

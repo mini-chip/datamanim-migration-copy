@@ -69,289 +69,51 @@ print(f"구매율: {df['purchased'].mean():.3f}")
 
 **Q1-1.** 구매 여부에 따른 각 변수의 분포를 확인하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 구매 여부에 따른 기술통계
-print("=== 구매 여부별 기술통계 ===")
-print(df.groupby('purchased').describe())
-
-# 시각화
-fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-
-# 나이 분포
-axes[0,0].boxplot([df[df['purchased']==0]['age'], df[df['purchased']==1]['age']],
-                  labels=['미구매', '구매'])
-axes[0,0].set_title('나이 분포')
-axes[0,0].set_ylabel('나이')
-
-# 소득 분포
-axes[0,1].boxplot([df[df['purchased']==0]['income'], df[df['purchased']==1]['income']],
-                  labels=['미구매', '구매'])
-axes[0,1].set_title('소득 분포')
-axes[0,1].set_ylabel('소득')
-
-# 이전구매횟수 분포
-axes[1,0].boxplot([df[df['purchased']==0]['previous_purchases'],
-                   df[df['purchased']==1]['previous_purchases']],
-                  labels=['미구매', '구매'])
-axes[1,0].set_title('이전구매횟수 분포')
-axes[1,0].set_ylabel('이전구매횟수')
-
-# 구매율
-purchase_rate = df['purchased'].value_counts()
-axes[1,1].pie(purchase_rate.values, labels=['미구매', '구매'], autopct='%1.1f%%')
-axes[1,1].set_title('구매 비율')
-
-plt.tight_layout()
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 **Q1-2.** 변수들 간의 상관관계를 분석하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 상관관계 분석
-correlation_matrix = df.corr()
-print("=== 상관관계 행렬 ===")
-print(correlation_matrix)
-
-# 히트맵으로 시각화
-plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0,
-            square=True, linewidths=0.5)
-plt.title('변수 간 상관관계')
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 ## 문제 2: 데이터 전처리 및 분할
 
 **Q2-1.** 독립변수를 표준화하고 훈련/테스트 데이터로 분할하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 독립변수와 종속변수 분리
-X = df[['age', 'income', 'previous_purchases']]
-y = df['purchased']
-
-# 훈련/테스트 데이터 분할
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
-                                                    random_state=42, stratify=y)
-
-# 표준화
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
-print(f"훈련 데이터 크기: {X_train.shape}")
-print(f"테스트 데이터 크기: {X_test.shape}")
-print(f"훈련 데이터 구매율: {y_train.mean():.3f}")
-print(f"테스트 데이터 구매율: {y_test.mean():.3f}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"테스트 데이터 구매율: {y_test.mean():.3f}")`} />
 
 ## 문제 3: 로지스틱 회귀 모델 구축
 
 **Q3-1.** 로지스틱 회귀 모델을 학습시키고 회귀계수를 확인하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 로지스틱 회귀 모델 생성 및 학습
-log_model = LogisticRegression(random_state=42)
-log_model.fit(X_train_scaled, y_train)
-
-# 회귀계수 확인
-feature_names = ['age', 'income', 'previous_purchases']
-coefficients = log_model.coef_[0]
-intercept = log_model.intercept_[0]
-
-print("=== 로지스틱 회귀 계수 ===")
-print(f"절편: {intercept:.4f}")
-for name, coef in zip(feature_names, coefficients):
-    print(f"{name}: {coef:.4f}")
-
-# 계수 시각화
-plt.figure(figsize=(8, 6))
-plt.barh(feature_names, coefficients)
-plt.xlabel('회귀계수')
-plt.title('로지스틱 회귀 계수')
-plt.grid(True, alpha=0.3)
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 ## 문제 4: 모델 예측 및 평가
 
 **Q4-1.** 테스트 데이터에 대한 예측을 수행하고 분류 성능을 평가하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 예측 수행
-y_pred = log_model.predict(X_test_scaled)
-y_pred_proba = log_model.predict_proba(X_test_scaled)[:, 1]
-
-# 분류 성능 평가
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-auc = roc_auc_score(y_test, y_pred_proba)
-
-print("=== 분류 성능 평가 ===")
-print(f"정확도 (Accuracy): {accuracy:.4f}")
-print(f"정밀도 (Precision): {precision:.4f}")
-print(f"재현율 (Recall): {recall:.4f}")
-print(f"F1-점수: {f1:.4f}")
-print(f"AUC: {auc:.4f}")
-
-# 상세 분류 보고서
-print("\n=== 상세 분류 보고서 ===")
-print(classification_report(y_test, y_pred, target_names=['미구매', '구매']))
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(classification_report(y_test, y_pred, target_names=['미구매', '구매']))`} />
 
 **Q4-2.** 혼동행렬을 생성하고 시각화하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 혼동행렬 생성
-cm = confusion_matrix(y_test, y_pred)
-
-plt.figure(figsize=(8, 6))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-            xticklabels=['미구매', '구매'],
-            yticklabels=['미구매', '구매'])
-plt.title('혼동행렬')
-plt.xlabel('예측값')
-plt.ylabel('실제값')
-plt.show()
-
-# 혼동행렬 해석
-tn, fp, fn, tp = cm.ravel()
-print(f"True Negative (올바른 미구매 예측): {tn}")
-print(f"False Positive (잘못된 구매 예측): {fp}")
-print(f"False Negative (잘못된 미구매 예측): {fn}")
-print(f"True Positive (올바른 구매 예측): {tp}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"True Positive (올바른 구매 예측): {tp}")`} />
 
 ## 문제 5: ROC 곡선 및 임계값 분석
 
 **Q5-1.** ROC 곡선을 그리고 최적 임계값을 찾으시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-from sklearn.metrics import roc_curve
-
-# ROC 곡선 데이터 계산
-fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
-
-# ROC 곡선 그리기
-plt.figure(figsize=(12, 5))
-
-plt.subplot(1, 2, 1)
-plt.plot(fpr, tpr, linewidth=2, label=f'ROC Curve (AUC = {auc:.3f})')
-plt.plot([0, 1], [0, 1], 'k--', linewidth=1, label='Random Classifier')
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('ROC Curve')
-plt.legend()
-plt.grid(True, alpha=0.3)
-
-# 임계값별 F1-점수
-plt.subplot(1, 2, 2)
-f1_scores = []
-for threshold in thresholds:
-    y_pred_threshold = (y_pred_proba >= threshold).astype(int)
-    f1_scores.append(f1_score(y_test, y_pred_threshold))
-
-plt.plot(thresholds, f1_scores, linewidth=2)
-plt.xlabel('Threshold')
-plt.ylabel('F1-Score')
-plt.title('임계값별 F1-점수')
-plt.grid(True, alpha=0.3)
-
-# 최적 임계값 찾기
-optimal_idx = np.argmax(f1_scores)
-optimal_threshold = thresholds[optimal_idx]
-plt.axvline(x=optimal_threshold, color='red', linestyle='--',
-           label=f'Optimal Threshold = {optimal_threshold:.3f}')
-plt.legend()
-
-plt.tight_layout()
-plt.show()
-
-print(f"최적 임계값: {optimal_threshold:.3f}")
-print(f"최적 임계값에서의 F1-점수: {max(f1_scores):.3f}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"최적 임계값에서의 F1-점수: {max(f1_scores):.3f}")`} />
 
 ## 문제 6: 새로운 고객 예측
 
 **Q6-1.** 새로운 고객의 구매 확률을 예측하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 새로운 고객 데이터
-new_customers = pd.DataFrame({
-    'age': [28, 45, 52],
-    'income': [35000, 75000, 60000],
-    'previous_purchases': [1, 5, 3]
-})
-
-print("=== 새로운 고객 정보 ===")
-print(new_customers)
-
-# 표준화 적용
-new_customers_scaled = scaler.transform(new_customers)
-
-# 구매 확률 예측
-purchase_probabilities = log_model.predict_proba(new_customers_scaled)[:, 1]
-predictions = log_model.predict(new_customers_scaled)
-
-print("\n=== 예측 결과 ===")
-for i, (prob, pred) in enumerate(zip(purchase_probabilities, predictions)):
-    print(f"고객 {i+1}: 구매 확률 {prob:.3f}, 예측 결과: {'구매' if pred == 1 else '미구매'}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"고객 {i+1}: 구매 확률 {prob:.3f}, 예측 결과: {'구매' if pred == 1 else '미구매'}")`} />
 
 ## 문제 7: 특성 중요도 분석
 
 **Q7-1.** 각 특성이 구매 결정에 미치는 영향을 분석하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-# 계수의 절댓값으로 중요도 분석
-feature_importance = np.abs(coefficients)
-importance_df = pd.DataFrame({
-    'feature': feature_names,
-    'importance': feature_importance,
-    'coefficient': coefficients
-}).sort_values('importance', ascending=False)
-
-print("=== 특성 중요도 ===")
-print(importance_df)
-
-# 시각화
-fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-# 중요도
-axes[0].barh(importance_df['feature'], importance_df['importance'])
-axes[0].set_xlabel('중요도 (|계수|)')
-axes[0].set_title('특성 중요도')
-
-# 계수 (양수/음수 구분)
-colors = ['red' if x < 0 else 'blue' for x in importance_df['coefficient']]
-axes[1].barh(importance_df['feature'], importance_df['coefficient'], color=colors)
-axes[1].set_xlabel('회귀계수')
-axes[1].set_title('회귀계수 (양수: 구매 증가, 음수: 구매 감소)')
-axes[1].axvline(x=0, color='black', linestyle='-', alpha=0.3)
-
-plt.tight_layout()
-plt.show()
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`plt.show()`} />
 
 ## 종합 정리
 

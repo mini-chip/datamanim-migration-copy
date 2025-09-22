@@ -22,33 +22,13 @@ df = pd.DataFrame({'score': scores})
 
 **Q1.** 평균, 중앙값, 최빈값을 계산하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-mean_score = df['score'].mean()
-median_score = df['score'].median()
-mode_score = df['score'].mode()[0]
-
-print(f"평균: {mean_score:.2f}")
-print(f"중앙값: {median_score:.2f}")
-print(f"최빈값: {mode_score:.2f}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"최빈값: {mode_score:.2f}")`} />
 
 ## 문제 2: 산포도 측도
 
 **Q2.** 분산, 표준편차, 범위를 계산하시오.
 
-<CollapsibleCodeCell language="python" defaultCollapsed={true}>
-```python
-variance = df['score'].var(ddof=1)
-std_dev = df['score'].std(ddof=1)
-score_range = df['score'].max() - df['score'].min()
-
-print(f"분산: {variance:.2f}")
-print(f"표준편차: {std_dev:.2f}")
-print(f"범위: {score_range:.2f}")
-```
-</CollapsibleCodeCell>
+<CollapsibleCodeCell code={`print(f"범위: {score_range:.2f}")`} />
 
 ## 문제 3: 정규성 검정
 
@@ -65,4 +45,3 @@ if p_value > 0.05:
 else:
     print("정규분포를 따르지 않습니다.")
 ```
-</CollapsibleCodeCell>

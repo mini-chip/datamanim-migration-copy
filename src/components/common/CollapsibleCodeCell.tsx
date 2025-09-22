@@ -3,13 +3,17 @@ import React from "react";
 
 type Props = {
   /** 코드 문자열 */
-  code?: string;
+  code: string;
   /** 결과: 테이블/이미지 등 ReactNode */
   children?: React.ReactNode;
   className?: string;
   codeVariant?: "jupyter" | "plain";
   /** (옵션) 결과를 별도 prop으로도 받을 수 있게 */
   result?: React.ReactNode;
+  /** 언어 타입 (사용하지 않지만 MDX에서 전달될 수 있음) */
+  language?: string;
+  /** 기본 접힘 상태 (사용하지 않지만 MDX에서 전달될 수 있음) */
+  defaultCollapsed?: boolean;
 };
 
 export default function CollapsibleCodeCell({
@@ -17,17 +21,12 @@ export default function CollapsibleCodeCell({
   children,
   result,
   className = "",
-  codeVariant = "jupyter"
+  codeVariant = "jupyter",
+  language,
+  defaultCollapsed
 }: Props) {
-  // code 추출 (children이 전부 문자열일 때만 fallback)
-  const rawFromChildren =
-    typeof children === "string"
-      ? children
-      : Array.isArray(children) && children.every((c) => typeof c === "string")
-      ? (children as string[]).join("")
-      : "";
-
-  const raw = (code ?? rawFromChildren).replace(/\r\n?/g, "\n");
+  // code가 필수이므로 바로 사용
+  const raw = code.replace(/\r\n?/g, "\n");
 
   // "==== 실행 결과 ====" 구분자 파싱(문자열 결과용)
   const sepRegex = /^\s*#?\s*={2,}\s*실행\s*결과\s*={2,}\s*$/;
@@ -65,11 +64,11 @@ export default function CollapsibleCodeCell({
       : "rounded-lg border border-slate-200 bg-slate-50 border-l-4 border-l-blue-500";
 
   return (
-    <div className={`not-prose mb-3 ${className}`}>
+    <div className={`not-prose mb-0 mt-0 ${className}`} style={{ margin: 0 }}>
       <details className="group">
         <summary
           aria-label="Toggle hidden content"
-          className="list-none cursor-pointer select-none rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors duration-150  shadow-sm"
+          className="list-none cursor-pointer select-none rounded-lg border border-slate-200 bg-white hover:bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition-colors duration-150 shadow-sm"
         >
           <span className="inline-flex items-center gap-2">
             <span className="transition-transform duration-200 text-slate-500 group-open:rotate-90 text-xs">
